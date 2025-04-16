@@ -9,6 +9,12 @@ A tool to analyze Twitter profiles by fetching and saving tweets to a JSON file.
 
 ## Installation
 
+```bash
+curl -fsSL https://raw.githubusercontent.com/paoloanzn/twitter-analyzer/main/install.sh | bash
+```
+
+## Installation (Manual)
+
 1. Clone the repository:
 
 ```bash

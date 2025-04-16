@@ -3,6 +3,7 @@ import { distill } from "./twitter/distill";
 import { getScraper } from "./twitter/scraper";
 import { parseArgs } from "util";
 import { getLogger } from "./utils/logger";
+import type { Profile } from "agent-twitter-client";
 
 const logger = getLogger();
 
@@ -42,9 +43,20 @@ if (!result.success) {
   process.exit(1);
 }
 
-logger.info(
-  `Successfully logged in as ${JSON.stringify(await getScraper().me(), null, 2)}`,
-);
+(async () => {
+  const profile: Profile | undefined = await getScraper().me();
+  switch (profile) {
+    case undefined:
+      logger.warn("Unable to load logged-in user profile information.");
+      break;
+    default:
+      const { username, name, userId } = profile;
+      logger.info(
+        `Successfully logged in as ${JSON.stringify({ username, name, userId }, null, 2)}`,
+      );
+      break;
+  }
+})();
 
 const { success, message, file } = await distill({
   username,

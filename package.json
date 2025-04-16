@@ -1,0 +1,24 @@
+{
+  "name": "twitter-analyzer",
+  "module": "index.ts",
+  "type": "module",
+  "private": true,
+  "scripts": {
+    "format": "bun run prettier ./src --write",
+    "dev": "bun run format && bun src/index.ts"
+  },
+  "devDependencies": {
+    "@types/bun": "latest",
+    "@types/dateformat": "^5.0.3",
+    "prettier": "3.5.3"
+  },
+  "peerDependencies": {
+    "typescript": "^5"
+  },
+  "dependencies": {
+    "agent-twitter-client": "^0.0.17",
+    "chalk": "^5.4.1",
+    "dateformat": "^5.0.3",
+    "dotenv": "^16.5.0"
+  }
+}

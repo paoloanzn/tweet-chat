@@ -1,0 +1,10 @@
+services:
+  cli:
+    build: .
+    volumes:
+      - .:/app
+    working_dir: /app
+    command: bun src/index.ts
+    # Optionally, for interactive CLI:
+    stdin_open: true
+    tty: true

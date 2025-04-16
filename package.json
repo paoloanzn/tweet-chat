@@ -1,11 +1,17 @@
 {
   "name": "twitter-analyzer",
   "module": "index.ts",
+  "version": "0.1",
   "type": "module",
   "private": true,
+  "bin": {
+    "twitter-analyzer": "src/index.ts"
+  },
   "scripts": {
     "format": "bun run prettier ./src --write",
-    "dev": "bun run format && bun src/index.ts"
+    "dev": "bun run format && bun src/index.ts",
+    "start": "bun run src/index.ts",
+    "cross-compile": "/usr/bin/env sh ./cross-compile.sh"
   },
   "devDependencies": {
     "@types/bun": "latest",

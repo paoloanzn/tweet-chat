@@ -17,6 +17,9 @@ jobs:
         with:
           bun-version: latest
 
+      - name: Install deps
+        run: bun install
+
       - name: Cross-compile binaries
         run: bun cross-compile
 

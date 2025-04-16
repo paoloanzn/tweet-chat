@@ -18,7 +18,7 @@ jobs:
           bun-version: latest
 
       - name: Cross-compile binaries
-        run: ./cross-compile.sh
+        run: bun cross-compile
 
       - name: Upload binaries to release
         if: github.event_name == 'release'  # Only runs for release events

@@ -8,6 +8,8 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
+    permissions:
+      contents: write
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
@@ -25,6 +27,6 @@ jobs:
 
       - name: Upload binaries to release
         if: github.event_name == 'release'  # Only runs for release events
-        uses: softprops/action-gh-release@v1
+        uses: softprops/action-gh-release@v2
         with:
           files: out/twitter-analyzer-*

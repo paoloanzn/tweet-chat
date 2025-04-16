@@ -1,0 +1,27 @@
+name: Cross-Compile and Publish Binaries
+
+on:
+  release:
+    types: [published]
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Bun
+        uses: oven-sh/setup-bun@v1
+        with:
+          bun-version: latest
+
+      - name: Cross-compile binaries
+        run: ./cross-compile.sh
+
+      - name: Upload binaries to release
+        if: github.event_name == 'release'  # Only runs for release events
+        uses: softprops/action-gh-release@v1
+        with:
+          files: out/twitter-analyzer-*

@@ -1,4 +1,4 @@
-import { type Tweet } from "agent-twitter-client";
+import { type Profile, type Tweet } from "agent-twitter-client";
 import { getScraper } from "./scraper";
 import { writeFileSync } from "fs";
 
@@ -15,6 +15,7 @@ export interface DistillResult {
 
 export interface DistilledProfile {
   readonly username: string;
+  readonly profile: Profile;
   readonly tweets: Tweet[];
 }
 
@@ -24,12 +25,16 @@ const scrapeSettings = Object.freeze({
 
 export const saveProfile = ({
   username,
+  profile,
   tweets,
 }: DistilledProfile): string | null => {
   const fileName = `${username}.distilled.json`;
 
   try {
-    writeFileSync(fileName, JSON.stringify({ username, tweets }, null, 2));
+    writeFileSync(
+      fileName,
+      JSON.stringify({ username, profile, tweets }, null, 2),
+    );
   } catch (error: any) {
     return null;
   }
@@ -69,7 +74,9 @@ export const distill = async ({
     return { success: false, message: "no tweets found.", file: null };
   }
 
-  const distilledProfile = saveProfile({ username, tweets });
+  const profile = await scraper.getProfile(username);
+
+  const distilledProfile = saveProfile({ username, profile, tweets });
   if (!distilledProfile) {
     return {
       success: false,

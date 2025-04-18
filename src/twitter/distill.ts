@@ -11,6 +11,7 @@ export interface DistillResult {
   readonly success: boolean;
   readonly message: string | null;
   readonly file: string | null;
+  readonly profile: DistilledProfile | null;
 }
 
 export interface DistilledProfile {
@@ -49,11 +50,11 @@ export const distill = async ({
   const scraper = getScraper();
 
   if (!(await scraper.isLoggedIn())) {
-    return { success: false, message: "scraper is not logged in.", file: null };
+    return { success: false, message: "scraper is not logged in.", file: null, profile: null};
   }
 
   if (username === "") {
-    return { success: false, message: "username is empty.", file: null };
+    return { success: false, message: "username is empty.", file: null, profile: null};
   }
 
   const tweetsIterator = scraper.getTweets(
@@ -71,7 +72,7 @@ export const distill = async ({
   }
 
   if (tweets.length === 0) {
-    return { success: false, message: "no tweets found.", file: null };
+    return { success: false, message: "no tweets found.", file: null, profile: null};
   }
 
   const profile = await scraper.getProfile(username);
@@ -82,8 +83,9 @@ export const distill = async ({
       success: false,
       message: "error while saving profile.",
       file: null,
+      profile: { username, profile, tweets }
     };
   }
 
-  return { success: true, message: null, file: distilledProfile };
+  return { success: true, message: null, file: distilledProfile, profile: { username, profile, tweets}};
 };

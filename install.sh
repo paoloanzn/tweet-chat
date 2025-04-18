@@ -53,9 +53,9 @@ DOWNLOAD_URL="https://github.com/$REPO/releases/download/$LATEST_TAG/$BINARY"
 echo "Downloading $BINARY from $DOWNLOAD_URL"
 curl -L -o $BINARY_NAME $DOWNLOAD_URL
 
-chmod +x $BINARY_NAME
-
 echo "Moving binary to $INSTALL_DIR. You may be prompted for your password."
 sudo mv $BINARY_NAME $INSTALL_DIR/
+
+sudo chmod +x $INSTALL_DIR/$BINARY_NAME
 
 echo "Installation complete. You can now run 'twitter-analyzer' from the command line."

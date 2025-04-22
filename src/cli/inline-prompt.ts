@@ -2,7 +2,7 @@ import { TextPrompt } from "@clack/core";
 import color from "picocolors";
 
 export interface InlineTextOptions {
-	placeholder?: string;
+  placeholder?: string;
 }
 
 export const inlineText = (opts?: InlineTextOptions) => {
@@ -14,12 +14,12 @@ export const inlineText = (opts?: InlineTextOptions) => {
           color.dim(opts.placeholder.slice(1))
         : color.inverse(color.hidden("_"));
       const value = !this.value ? placeholder : this.valueWithCursor;
-      
+
       switch (this.state) {
-        case 'cancel':
-            return color.red(`✖ ${value}`);
+        case "cancel":
+          return color.red(`✖ ${value}`);
         default:
-            return `> ${value}`;
+          return `> ${value}`;
       }
     },
   }).prompt() as Promise<string | symbol>;

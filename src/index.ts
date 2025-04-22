@@ -20,6 +20,7 @@ import { log, spinner, intro, isCancel } from "@clack/prompts";
 import { version } from "../package.json";
 import chalk from "chalk";
 import { inlineText } from "./cli/inline-prompt";
+import { createCache, type Cache } from "./utils/cache";
 
 const { values } = parseArgs({
   args: Bun.argv,
@@ -31,6 +32,10 @@ const { values } = parseArgs({
       type: "string",
     },
     chat: {
+      type: "boolean",
+      default: false,
+    },
+    "no-cache": {
       type: "boolean",
       default: false,
     },
@@ -47,6 +52,9 @@ const cliOptions = {
 intro(chalk.bgCyan(`Tweet-chat-v${version}`));
 
 const cli = await Cli.create(cliOptions);
+
+const cache: Cache = createCache();
+log.success(`loaded cache from ${cache.path()}`);
 
 await cli.exec(async () => {
   const credentials = getCredentials();
@@ -105,6 +113,27 @@ if (!values.chat) {
 }
 
 const persona: string = await cli.exec(async (options) => {
+  const cachedPersona = cache.get("persona");
+  if (cachedPersona && !values["no-cache"]) {
+    try {
+      const parsedPersona: any = JSON.parse(cachedPersona);
+      const { username } = options;
+
+      if (
+        parsedPersona?.username &&
+        parsedPersona?.username === username &&
+        parsedPersona?.lastTweetId === profile?.tweets[0]?.id
+      ) {
+        log.success("Using cached persona.");
+        return parsedPersona.data as string;
+      }
+    } catch (error) {
+      log.error("Error while parsing cached persona.");
+      log.error(`Error: ${error}`);
+      log.info("Generating new persona.");
+    }
+  }
+
   const createPersonaTemplate = `
 # TASK
 Given this JSON file containing account information and scraped tweets from a twitter account.
@@ -149,6 +178,16 @@ OUTPUT ONLY THE JSON FILE, nothing else.
 
   s.stop("Persona generation complete");
   log.success(`Successfully generated new Persona.`);
+
+  cache.save(
+    "persona",
+    JSON.stringify({
+      username: options.username,
+      lastTweetId: profile?.tweets[0]?.id,
+      data: generateTextResult.text,
+    }),
+  );
+
   return generateTextResult.text;
 });
 

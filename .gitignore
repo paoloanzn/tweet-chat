@@ -38,3 +38,6 @@ bun.lock
 
 # distillation files
 *.distilled.json
+
+# cache folder
+cache/

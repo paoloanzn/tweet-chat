@@ -217,6 +217,21 @@ OUTPUT ONLY THE NEXT MESSAGE IN PLAIN TEXT, nothing else.
 `;
 
   const conversation = new Array<string>();
+
+  const settings: ModelSettings = {
+    provider: options.provider as ModelProvider,
+    name: options.model,
+    ...defaultConfig,
+  };
+  const createModelResult = createModel(settings);
+  if (!createModelResult.success) {
+    log.error(`Error while creating Ai model: ${createModelResult.message}`);
+    process.exit(1);
+  }
+  const model: Model = createModelResult.model!;
+
+  const context = newContext(chatTemplate);
+
   while (true) {
     const input = await inlineText(
       conversation.length <= 0 ? { placeholder: "Type your message..." } : {},
@@ -232,19 +247,6 @@ OUTPUT ONLY THE NEXT MESSAGE IN PLAIN TEXT, nothing else.
 
     conversation.push(`User: ${String(input)}`);
 
-    const context = newContext(chatTemplate);
-
-    const settings: ModelSettings = {
-      provider: options.provider as ModelProvider,
-      name: options.model,
-      ...defaultConfig,
-    };
-    const createModelResult = createModel(settings);
-    if (!createModelResult.success) {
-      log.error(`Error while creating Ai model: ${createModelResult.message}`);
-      process.exit(1);
-    }
-    const model: Model = createModelResult.model!;
     const generateTextResult = await model.generateText(
       context.compileTemplate({
         persona: persona,

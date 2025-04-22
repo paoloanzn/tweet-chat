@@ -1,11 +1,25 @@
 import { getCredentials, login } from "./twitter/login";
-import { distill } from "./twitter/distill";
+import {
+  distill,
+  type DistilledProfile,
+  type DistillResult,
+} from "./twitter/distill";
 import { getScraper } from "./twitter/scraper";
 import { parseArgs } from "util";
-import { getLogger } from "./utils/logger";
 import type { Profile } from "agent-twitter-client";
-
-const logger = getLogger();
+import {
+  createModel,
+  defaultConfig,
+  ModelProvider,
+  type Model,
+  type ModelSettings,
+} from "./ai/provider";
+import { newContext, type Context } from "./ai/template";
+import { Cli } from "./cli/cli";
+import { log, spinner, intro, isCancel } from "@clack/prompts";
+import { version } from "../package.json";
+import chalk from "chalk";
+import { inlineText } from "./cli/inline-prompt";
 
 const { values } = parseArgs({
   args: Bun.argv,
@@ -16,57 +30,192 @@ const { values } = parseArgs({
     username: {
       type: "string",
     },
+    chat: {
+      type: "boolean",
+      default: false,
+    },
   },
   strict: true,
   allowPositionals: true,
 });
 
-if (!values.username) {
-  logger.error("username required.");
-  process.exit(1);
-}
+const cliOptions = {
+  username: values.username,
+  maxTweets: values.tweets ? parseInt(values.tweets) : 10,
+};
 
-const username = values.username;
-const maxTweets = values.tweets ? parseInt(values.tweets) : 10;
+intro(chalk.bgCyan(`Tweet-chat-v${version}`));
 
-const credentials = getCredentials();
+const cli = await Cli.create(cliOptions);
 
-if (!credentials) {
-  logger.error("Error: Unable to load credentials.");
-  process.exit(1);
-}
-
-const result = await login(credentials);
-
-if (!result.success) {
-  logger.error(`Error during login: ${result.message}`);
-  process.exit(1);
-}
-
-(async () => {
-  const profile: Profile | undefined = await getScraper().me();
-  switch (profile) {
-    case undefined:
-      logger.warn("Unable to load logged-in user profile information.");
-      break;
-    default:
-      const { username, name, userId } = profile;
-      logger.info(
-        `Successfully logged in as ${JSON.stringify({ username, name, userId }, null, 2)}`,
-      );
-      break;
+await cli.exec(async () => {
+  const credentials = getCredentials();
+  if (!credentials) {
+    log.error("Error: Unable to load credentials.");
+    process.exit(1);
   }
-})();
 
-const { success, message, file } = await distill({
-  username,
-  maxTweets,
+  const s = spinner();
+  s.start("Logging in...");
+
+  const result = await login(credentials);
+  if (!result.success) {
+    s.stop("Error during login");
+    log.error(`Error during login: ${result.message}`);
+    process.exit(1);
+  }
+
+  s.stop("Logged in successfully");
 });
 
-if (!success) {
-  logger.error(`Error: ${message}`);
-  process.exit(1);
+await cli.exec(async () => {
+  const profile: Profile | undefined = await getScraper().me();
+  if (!profile) {
+    log.warn("Unable to load logged-in user profile information.");
+  } else {
+    const { username } = profile;
+    log.success(`Successfully logged in as @${username}`);
+  }
+});
+
+const { file, profile }: DistillResult = await cli.exec(async (options) => {
+  const { username, maxTweets } = options;
+
+  const s = spinner();
+  s.start("Distilling tweets...");
+
+  const result = await distill({
+    username,
+    maxTweets,
+  });
+
+  if (!result.success) {
+    s.stop("Error during distillation");
+    log.error(`Error during distillation: ${result.message}`);
+    process.exit(1);
+  }
+
+  s.stop("Distillation complete");
+  log.success(`Distilled profile of @${username} saved to ${result.file}`);
+  return result;
+});
+
+if (!values.chat) {
+  process.exit(0);
 }
 
-logger.info(`Distilled profile of @${username} saved to ${file}`);
-process.exit(0);
+const persona: string = await cli.exec(async (options) => {
+  const createPersonaTemplate = `
+# TASK
+Given this JSON file containing account information and scraped tweets from a twitter account.
+Analyze the content and create a JSON file to represent which represent a persona of that account.
+Keep in mind the JSON file will be use to prompt another LLM so the user will be able to "chat" with a specific twitter account.
+
+# JSON FILE
+\`\`\`
+{{ profile }}
+\`\`\`
+
+# IMPORTANT:
+OUTPUT ONLY THE JSON FILE, nothing else.
+`;
+
+  const settings: ModelSettings = {
+    provider: options.provider as ModelProvider,
+    name: options.model,
+    ...defaultConfig,
+  };
+
+  const createModelResult = createModel(settings);
+  if (!createModelResult.success) {
+    log.error(`Error while creating Ai model: ${createModelResult.message}`);
+    process.exit(1);
+  }
+  const model: Model = createModelResult.model!;
+  const context: Context = newContext(createPersonaTemplate);
+  const s = spinner();
+  s.start("Generating persona...");
+  const generateTextResult = await model.generateText(
+    context.compileTemplate({
+      profile: JSON.stringify(profile, null, 2),
+    }),
+    null,
+  );
+  if (!generateTextResult.success) {
+    s.stop("Error during persona generation");
+    log.error(`Error while generating text: ${generateTextResult.message}`);
+    process.exit(1);
+  }
+
+  s.stop("Persona generation complete");
+  log.success(`Successfully generated new Persona.`);
+  return generateTextResult.text;
+});
+
+await cli.exec(async (options) => {
+  log.info(chalk.cyanBright("Chat started!"));
+  const chatTemplate = `
+# You are an AI model that impersonates a Twitter account. You will be given a JSON file representing the persona of that account and a message conversation.
+
+# TASK
+Your job is to produce the next message in the conversation, strictly following the persona given to you and NEVER breaking character.
+Don't overact or be too verbose, just answer the question.
+Don't act as an assistant, just act as the account you are impersonating, remembering that you are a human being.
+
+# PERSONA
+\`\`\`
+{{ persona }}
+\`\`\`
+# CONVERSATION
+\`\`\`
+{{ conversation }}
+\`\`\`
+
+# IMPORTANT:
+OUTPUT ONLY THE NEXT MESSAGE IN PLAIN TEXT, nothing else.
+`;
+
+  const conversation = new Array<string>();
+  while (true) {
+    const input = await inlineText().prompt();
+    if (input === "") {
+      break;
+    }
+
+    if (isCancel(input)) {
+      log.error("Operation cancelled.");
+      process.exit(0);
+    }
+
+    conversation.push(`User: ${String(input)}`);
+
+    const context = newContext(chatTemplate);
+
+    const settings: ModelSettings = {
+      provider: options.provider as ModelProvider,
+      name: options.model,
+      ...defaultConfig,
+    };
+    const createModelResult = createModel(settings);
+    if (!createModelResult.success) {
+      log.error(`Error while creating Ai model: ${createModelResult.message}`);
+      process.exit(1);
+    }
+    const model: Model = createModelResult.model!;
+    const generateTextResult = await model.generateText(
+      context.compileTemplate({
+        persona: persona,
+        conversation: conversation.join("\n"),
+      }),
+      (textPart: string) => {
+        process.stdout.write(textPart);
+      },
+    );
+    process.stdout.write("\n");
+    if (!generateTextResult.success) {
+      log.error(`Error while generating text: ${generateTextResult.message}`);
+      process.exit(1);
+    }
+    conversation.push(`@${options.username}: ${generateTextResult.text}`);
+  }
+});

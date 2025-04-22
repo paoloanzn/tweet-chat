@@ -2,9 +2,9 @@
 
 set -e
 
-REPO="paoloanzn/twitter-analyzer"
+REPO="paoloanzn/tweet-chat"
 INSTALL_DIR="/usr/local/bin"
-BINARY_NAME="twitter-analyzer"
+BINARY_NAME="tweet-chat"
 
 # Detect OS and architecture
 OS=$(uname -s)
@@ -12,25 +12,25 @@ ARCH=$(uname -m)
 
 # Handle Windows (e.g., Git Bash or Cygwin)
 if [[ "$OS" == MINGW* ]] || [[ "$OS" == CYGWIN* ]]; then
-  echo "For Windows, please download the 'twitter-analyzer-windows-x64.exe' binary from the GitHub releases page: https://github.com/$REPO/releases"
+  echo "For Windows, please download the 'tweet-chat-windows-x64.exe' binary from the GitHub releases page: https://github.com/$REPO/releases"
   exit 1
 fi
 
 # Determine the binary based on OS and architecture
 if [ "$OS" = "Darwin" ]; then
   if [ "$ARCH" = "arm64" ]; then
-    BINARY="twitter-analyzer-darwin-arm64"
+    BINARY="tweet-chat-darwin-arm64"
   elif [ "$ARCH" = "x86_64" ]; then
-    BINARY="twitter-analyzer-darwin-x64"
+    BINARY="tweet-chat-darwin-x64"
   else
     echo "Unsupported architecture: $ARCH"
     exit 1
   fi
 elif [ "$OS" = "Linux" ]; then
   if [ "$ARCH" = "aarch64" ]; then
-    BINARY="twitter-analyzer-linux-arm64"
+    BINARY="tweet-chat-linux-arm64"
   elif [ "$ARCH" = "x86_64" ]; then
-    BINARY="twitter-analyzer-linux-x64"
+    BINARY="tweet-chat-linux-x64"
   else
     echo "Unsupported architecture: $ARCH"
     exit 1
@@ -58,4 +58,4 @@ sudo mv $BINARY_NAME $INSTALL_DIR/
 
 sudo chmod +x $INSTALL_DIR/$BINARY_NAME
 
-echo "Installation complete. You can now run 'twitter-analyzer' from the command line."
+echo "Installation complete. You can now run 'tweet-chat' from the command line."

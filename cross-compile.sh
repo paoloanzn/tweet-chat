@@ -1,4 +1,4 @@
-BINARY_NAME="twitter-analyzer"
+BINARY_NAME="tweet-chat"
 ENTRYPOINT="src/index.ts"
 OUT_FOLDER="./out"
 

@@ -29,4 +29,4 @@ jobs:
         if: github.event_name == 'release'  # Only runs for release events
         uses: softprops/action-gh-release@v2
         with:
-          files: out/twitter-analyzer-*
+          files: out/tweet-chat-*

@@ -1,4 +1,8 @@
-import { getCredentials, login } from "./twitter/login";
+import {
+  getCredentials,
+  login,
+  type TwitterCredentials,
+} from "./twitter/login";
 import { distill, type DistillResult } from "./twitter/distill";
 import { getScraper } from "./twitter/scraper";
 import { parseArgs } from "util";
@@ -12,13 +16,14 @@ import {
 } from "./ai/provider";
 import { newContext, type Context } from "./ai/template";
 import { Cli } from "./cli/cli";
-import { log, spinner, intro, isCancel } from "@clack/prompts";
+import { log, spinner, intro, isCancel, text } from "@clack/prompts";
 import { version } from "../package.json";
 import chalk from "chalk";
 import { inlineText } from "./cli/inline-prompt";
 import { createCache, type Cache } from "./utils/cache";
 import path from "path";
 import os from "os";
+import { addOrUpdateEnvVariable } from "./utils/env";
 
 const { values } = parseArgs({
   args: Bun.argv,
@@ -59,11 +64,36 @@ const cache: Cache = createCache(cachePath);
 log.success(`loaded cache from ${cache.path()}`);
 
 await cli.exec(async () => {
-  const credentials = getCredentials();
-  if (!credentials) {
-    log.error("Error: Unable to load credentials.");
-    process.exit(1);
-  }
+  const credentials: TwitterCredentials =
+    getCredentials() ||
+    (await (async (): Promise<TwitterCredentials> => {
+      const username = await text({
+        message: "Enter your Twitter username:",
+        placeholder: "e.g. elonmusk (No @ symbol)",
+      });
+      const password = await text({
+        message: "Enter your Twitter password:",
+        placeholder: "e.g. mypassword",
+      });
+      const email = await text({
+        message: "Enter your Twitter email:",
+      });
+      if (isCancel(username) || isCancel(password) || isCancel(email)) {
+        log.error("Operation cancelled.");
+        process.exit(1);
+      }
+
+      addOrUpdateEnvVariable("TWITTER_USERNAME", String(username));
+      addOrUpdateEnvVariable("TWITTER_PASSWORD", String(password));
+      addOrUpdateEnvVariable("TWITTER_EMAIL", String(email));
+
+      return {
+        username: String(username),
+        password: String(password),
+        email: String(email),
+        cookies: null,
+      };
+    })());
 
   const s = spinner();
   s.start("Logging in...");

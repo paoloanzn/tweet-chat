@@ -1,15 +1,15 @@
 {
-  "name": "twitter-analyzer",
+  "name": "twitter-chat",
   "module": "index.ts",
-  "version": "0.1",
+  "version": "0.2.0",
   "type": "module",
   "private": true,
   "bin": {
-    "twitter-analyzer": "src/index.ts"
+    "tweet-chat": "src/index.ts"
   },
   "scripts": {
     "format": "bun run prettier ./src --write",
-    "dev": "bun run format && bun src/index.ts",
+    "dev": "NODE_ENV=development bun src/index.ts",
     "start": "bun run src/index.ts",
     "cross-compile": "/usr/bin/env sh ./cross-compile.sh"
   },
@@ -22,9 +22,14 @@
     "typescript": "^5"
   },
   "dependencies": {
+    "@ai-sdk/openai": "^1.3.16",
+    "@clack/core": "^0.4.2",
+    "@clack/prompts": "^0.10.1",
     "agent-twitter-client": "^0.0.17",
+    "ai": "^4.3.9",
     "chalk": "^5.4.1",
     "dateformat": "^5.0.3",
-    "dotenv": "^16.5.0"
+    "dotenv": "^16.5.0",
+    "picocolors": "^1.1.1"
   }
 }

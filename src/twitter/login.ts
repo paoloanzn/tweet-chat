@@ -1,6 +1,8 @@
 import * as dotenv from "dotenv";
 import { addOrUpdateEnvVariable } from "../utils/env";
 import { getScraper } from "./scraper";
+import path from "path";
+import os from "os";
 
 export interface TwitterCredentials {
   readonly username: string;
@@ -18,7 +20,13 @@ export interface LoginResult {
   readonly message: string | null;
 }
 
-dotenv.config();
+const envPath =
+  Bun.env.NODE_ENV === "development"
+    ? ".env"
+    : path.join(os.homedir(), ".cache/tweet-chat", ".env");
+dotenv.config({
+  path: envPath,
+});
 
 export const getCredentials = (): TwitterCredentials | null => {
   if (

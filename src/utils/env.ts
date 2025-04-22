@@ -1,16 +1,22 @@
-import { readFileSync, writeFileSync } from "fs";
-import { getLogger } from "./logger";
+import { mkdirSync, readFileSync, writeFileSync } from "fs";
+import { log } from "@clack/prompts";
+import path from "path";
+import os from "os";
 
-const logger = getLogger();
+const envPath =
+  Bun.env.NODE_ENV === "development"
+    ? ".env"
+    : path.join(os.homedir(), ".cache/tweet-chat", ".env");
 
 export const addOrUpdateEnvVariable = (key: string, value: string): void => {
-  const envPath = ".env";
   let envContent = "";
 
   try {
     envContent = readFileSync(envPath, "utf8");
   } catch (err) {
-    logger.info(".env file not found. Creating a new one.");
+    log.info(".env file not found. Creating a new one.");
+    const parentDir = path.dirname(envPath);
+    mkdirSync(parentDir, { recursive: true });
   }
 
   const lines = envContent.split("\n");

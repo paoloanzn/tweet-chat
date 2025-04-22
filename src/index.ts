@@ -31,7 +31,7 @@ const { values } = parseArgs({
     username: {
       type: "string",
     },
-    chat: {
+    scrape: {
       type: "boolean",
       default: false,
     },
@@ -108,7 +108,7 @@ const { file, profile }: DistillResult = await cli.exec(async (options) => {
   return result;
 });
 
-if (!values.chat) {
+if (values.scrape) {
   process.exit(0);
 }
 
@@ -216,7 +216,7 @@ OUTPUT ONLY THE NEXT MESSAGE IN PLAIN TEXT, nothing else.
 
   const conversation = new Array<string>();
   while (true) {
-    const input = await inlineText().prompt();
+    const input = await inlineText(conversation.length <= 0 ? { placeholder: 'Type your message...' } : {});
     if (input === "") {
       break;
     }

@@ -1,9 +1,5 @@
 import { getCredentials, login } from "./twitter/login";
-import {
-  distill,
-  type DistilledProfile,
-  type DistillResult,
-} from "./twitter/distill";
+import { distill, type DistillResult } from "./twitter/distill";
 import { getScraper } from "./twitter/scraper";
 import { parseArgs } from "util";
 import type { Profile } from "agent-twitter-client";
@@ -21,6 +17,8 @@ import { version } from "../package.json";
 import chalk from "chalk";
 import { inlineText } from "./cli/inline-prompt";
 import { createCache, type Cache } from "./utils/cache";
+import path from "path";
+import os from "os";
 
 const { values } = parseArgs({
   args: Bun.argv,
@@ -53,7 +51,11 @@ intro(chalk.bgCyan(`Tweet-chat-v${version}`));
 
 const cli = await Cli.create(cliOptions);
 
-const cache: Cache = createCache();
+const cachePath =
+  Bun.env.NODE_ENV === "development"
+    ? "."
+    : path.join(os.homedir(), ".cache/tweet-chat");
+const cache: Cache = createCache(cachePath);
 log.success(`loaded cache from ${cache.path()}`);
 
 await cli.exec(async () => {
@@ -216,7 +218,9 @@ OUTPUT ONLY THE NEXT MESSAGE IN PLAIN TEXT, nothing else.
 
   const conversation = new Array<string>();
   while (true) {
-    const input = await inlineText(conversation.length <= 0 ? { placeholder: 'Type your message...' } : {});
+    const input = await inlineText(
+      conversation.length <= 0 ? { placeholder: "Type your message..." } : {},
+    );
     if (input === "") {
       break;
     }

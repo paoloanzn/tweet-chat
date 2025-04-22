@@ -9,7 +9,7 @@
   },
   "scripts": {
     "format": "bun run prettier ./src --write",
-    "dev": "bun src/index.ts",
+    "dev": "NODE_ENV=development bun src/index.ts",
     "start": "bun run src/index.ts",
     "cross-compile": "/usr/bin/env sh ./cross-compile.sh"
   },

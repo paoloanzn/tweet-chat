@@ -3,6 +3,7 @@ import color from "picocolors";
 
 export interface InlineTextOptions {
   placeholder?: string;
+  prompt?: string;
 }
 
 export const inlineText = (opts?: InlineTextOptions) => {
@@ -19,7 +20,7 @@ export const inlineText = (opts?: InlineTextOptions) => {
         case "cancel":
           return color.red(`✖ ${value}`);
         default:
-          return `> ${value}`;
+          return `${opts?.prompt ? opts.prompt + " " : ""}> ${value}`;
       }
     },
   }).prompt() as Promise<string | symbol>;

@@ -264,7 +264,9 @@ OUTPUT ONLY THE NEXT MESSAGE IN PLAIN TEXT, nothing else.
 
   while (true) {
     const input = await inlineText(
-      conversation.length <= 0 ? { placeholder: "Type your message..." } : {},
+      conversation.length <= 0
+        ? { placeholder: "Type your message...", prompt: "you" }
+        : { prompt: "you" },
     );
     if (input === "") {
       break;
@@ -277,13 +279,14 @@ OUTPUT ONLY THE NEXT MESSAGE IN PLAIN TEXT, nothing else.
 
     conversation.push(`User: ${String(input)}`);
 
+    process.stdout.write(chalk.cyan(`${options.username} > `));
     const generateTextResult = await model.generateText(
       context.compileTemplate({
         persona: persona,
         conversation: conversation.join("\n"),
       }),
       (textPart: string) => {
-        process.stdout.write(textPart);
+        process.stdout.write(chalk.cyan(textPart));
       },
     );
     process.stdout.write("\n");

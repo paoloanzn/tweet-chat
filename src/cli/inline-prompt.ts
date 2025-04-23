@@ -18,9 +18,9 @@ export const inlineText = (opts?: InlineTextOptions) => {
 
       switch (this.state) {
         case "cancel":
-          return color.red(`✖ ${value}`);
+          return color.red(`✖`);
         default:
-          return `${opts?.prompt ? opts.prompt + " " : ""}> ${value}`;
+          return `${opts?.prompt ? color.bgCyanBright("["+opts?.prompt+"]") + " " : ""}:: ${value}`;
       }
     },
   }).prompt() as Promise<string | symbol>;

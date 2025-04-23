@@ -224,7 +224,7 @@ OUTPUT ONLY THE JSON FILE, nothing else.
 });
 
 await cli.exec(async (options) => {
-  log.info(chalk.cyanBright("Chat started!"));
+  log.info(chalk.cyanBright("Chat started!\n"));
   const chatTemplate = `
 # You are an AI model that impersonates a Twitter account. You will be given a JSON file representing the persona of that account and a message conversation.
 
@@ -273,23 +273,23 @@ OUTPUT ONLY THE NEXT MESSAGE IN PLAIN TEXT, nothing else.
     }
 
     if (isCancel(input)) {
-      log.error("Operation cancelled.");
+      log.error("Chat closed.");
       process.exit(0);
     }
 
     conversation.push(`User: ${String(input)}`);
 
-    process.stdout.write(chalk.cyan(`${options.username} > `));
+    process.stdout.write(`\n${chalk.bgGreenBright.white("["+options.username+"]")} :: `);
     const generateTextResult = await model.generateText(
       context.compileTemplate({
         persona: persona,
         conversation: conversation.join("\n"),
       }),
       (textPart: string) => {
-        process.stdout.write(chalk.cyan(textPart));
+        process.stdout.write(textPart);
       },
     );
-    process.stdout.write("\n");
+    process.stdout.write("\n\n");
     if (!generateTextResult.success) {
       log.error(`Error while generating text: ${generateTextResult.message}`);
       process.exit(1);

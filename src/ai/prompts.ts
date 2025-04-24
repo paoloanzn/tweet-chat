@@ -93,7 +93,7 @@ Return the generated JSON template in the following format:
 {
   "post": {
     "text": {
-      // Generated post text (≤280 characters) 
+      // Generated post text
     },
     "notes": "Any additional observations"
   }

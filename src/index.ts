@@ -24,6 +24,7 @@ import { createCache, type Cache } from "./utils/cache";
 import path from "path";
 import os from "os";
 import { addOrUpdateEnvVariable } from "./utils/env";
+import { chatTemplate } from "./ai/prompts";
 
 const { values } = parseArgs({
   args: Bun.argv,
@@ -225,26 +226,6 @@ OUTPUT ONLY THE JSON FILE, nothing else.
 
 await cli.exec(async (options) => {
   log.info(chalk.cyanBright("Chat started!\n"));
-  const chatTemplate = `
-# You are an AI model that impersonates a Twitter account. You will be given a JSON file representing the persona of that account and a message conversation.
-
-# TASK
-Your job is to produce the next message in the conversation, strictly following the persona given to you and NEVER breaking character.
-Don't overact or be too verbose, just answer the question.
-Don't act as an assistant, just act as the account you are impersonating, remembering that you are a human being.
-
-# PERSONA
-\`\`\`
-{{ persona }}
-\`\`\`
-# CONVERSATION
-\`\`\`
-{{ conversation }}
-\`\`\`
-
-# IMPORTANT:
-OUTPUT ONLY THE NEXT MESSAGE IN PLAIN TEXT, nothing else.
-`;
 
   const conversation = new Array<string>();
 

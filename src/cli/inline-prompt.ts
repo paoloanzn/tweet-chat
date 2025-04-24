@@ -20,7 +20,7 @@ export const inlineText = (opts?: InlineTextOptions) => {
         case "cancel":
           return color.red(`✖`);
         default:
-          return `${opts?.prompt ? color.bgCyanBright("["+opts?.prompt+"]") + " " : ""}:: ${value}`;
+          return `${opts?.prompt ? color.bgCyanBright("[" + opts?.prompt + "]") + " " : ""}:: ${value}`;
       }
     },
   }).prompt() as Promise<string | symbol>;

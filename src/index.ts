@@ -279,7 +279,9 @@ OUTPUT ONLY THE NEXT MESSAGE IN PLAIN TEXT, nothing else.
 
     conversation.push(`User: ${String(input)}`);
 
-    process.stdout.write(`\n${chalk.bgGreenBright.white("["+options.username+"]")} :: `);
+    process.stdout.write(
+      `\n${chalk.bgGreenBright.white("[" + options.username + "]")} :: `,
+    );
     const generateTextResult = await model.generateText(
       context.compileTemplate({
         persona: persona,

@@ -16,7 +16,7 @@ import {
 } from "./ai/provider";
 import { newContext, type Context } from "./ai/template";
 import { Cli } from "./cli/cli";
-import { log, spinner, intro, isCancel, text } from "@clack/prompts";
+import { log, spinner, intro, isCancel, text, select } from "@clack/prompts";
 import { version } from "../package.json";
 import chalk from "chalk";
 import { inlineText } from "./cli/inline-prompt";
@@ -24,6 +24,7 @@ import { createCache, type Cache } from "./utils/cache";
 import path from "path";
 import os from "os";
 import { addOrUpdateEnvVariable } from "./utils/env";
+import { tweetGenerationTemplate } from "./ai/prompts";
 
 const { values } = parseArgs({
   args: Bun.argv,
@@ -35,6 +36,10 @@ const { values } = parseArgs({
       type: "string",
     },
     scrape: {
+      type: "boolean",
+      default: false,
+    },
+    "generate-tweet": {
       type: "boolean",
       default: false,
     },
@@ -141,6 +146,82 @@ const { file, profile }: DistillResult = await cli.exec(async (options) => {
 });
 
 if (values.scrape) {
+  process.exit(0);
+}
+
+if (values["generate-tweet"]) {
+  await cli.exec(async (options) => {
+    const settings: ModelSettings = {
+      provider: options.provider as ModelProvider,
+      name: options.model,
+      ...defaultConfig,
+    };
+
+    const createModelResult = createModel(settings);
+    if (!createModelResult.success) {
+      log.error(`Error while creating Ai model: ${createModelResult.message}`);
+      process.exit(1);
+    }
+    const model: Model = createModelResult.model!;
+    const context: Context = newContext(tweetGenerationTemplate);
+
+    const numberOfTweets = await select({
+      message: "How many tweets do you want to generate?",
+      options: [
+        { value: 1, label: "1" },
+        { value: 2, label: "2" },
+        { value: 3, label: "3" },
+        { value: 4, label: "4" },
+        { value: 5, label: "5" },
+      ],
+    });
+    if (isCancel(numberOfTweets)) {
+      log.error("Operation cancelled.");
+      process.exit(1);
+    }
+    const numberOfTweetsInt = parseInt(String(numberOfTweets));
+    if (isNaN(numberOfTweetsInt) || numberOfTweetsInt <= 0) {
+      log.error("Invalid number of tweets. Please enter a positive integer.");
+      process.exit(1);
+    }
+
+    const s = spinner();
+    const tweets: string[] = [];
+    for (let i = 0; i < numberOfTweetsInt; i++) {
+      s.start(`Generating tweet ${i + 1}...`);
+      const generateObjectResult = await model.generateObject(
+        context.compileTemplate({
+          profile: JSON.stringify(profile, null, 2),
+        }),
+      );
+      if (!generateObjectResult.success) {
+        s.stop("Error during post data generation");
+        log.error(
+          `Error while generating text: ${generateObjectResult.message}`,
+        );
+        process.exit(1);
+      }
+      s.stop("Post data generation complete");
+
+      if (!generateObjectResult.object?.post?.text) {
+        log.error("Error: malformed post data");
+        process.exit(1);
+      }
+
+      const text = JSON.stringify(
+        generateObjectResult.object.post.text,
+        null,
+        2,
+      );
+      const unescapedText = text.replace(/\\n/g, '\n').replace(/^"|"$/g, ''); 
+      tweets.push(unescapedText);
+    }
+    log.success(`Successfully generated new Post Data.`);
+    log.info(
+      chalk.cyanBright("Generated post data:\n") +
+        chalk.greenBright(tweets.join("\n")),
+    );
+  });
   process.exit(0);
 }
 

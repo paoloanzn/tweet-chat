@@ -50,23 +50,7 @@ The JSON represents a sample of the account’s recent tweets (e.g., up to 300 t
   - **Tweet Data**: Analyze the \`tweets\` array to identify content themes, engagement metrics, and structural elements (e.g., visuals, hashtags, tone).
 - Note the account’s posting frequency (based on \`tweetsCount\` and \`timeParsed\` dates) and typical content formats (e.g., text-only, image-based, video-based).
 
-#### 2. Analyze Tweet Performance
-- **Metrics to Consider**:
-  - **Likes**: Indicates general approval and resonance.
-  - **Retweets**: Reflects shareability and perceived value.
-  - **Replies**: Suggests discussion-provoking content.
-  - **Bookmarks**: Indicates actionable or save-worthy content.
-  - **Views**: Shows reach, but prioritize engagement over raw views.
-- **Performance Scoring**:
-  - Calculate a composite engagement score for each tweet: \`score = (likes * 0.3) + (retweets * 0.2) + (replies * 0.2) + (bookmarks * 0.3)\`. Adjust weights if the JSON suggests specific priorities (e.g., bookmarks for technical accounts).
-  - Sort tweets by score to identify the top 5-10 high-performing tweets.
-  - Identify low-performing tweets (bottom 5-10) to understand what to avoid.
-- **Content Analysis**:
-  - For high-performing tweets, categorize their content type (e.g., actionable tip, trend-driven statement, question, humor) based on text, structure, and intent.
-  - Note common elements: length (short <100 chars, medium 100-200, long 200-280), tone (e.g., authoritative, witty), visuals (photos/videos), hashtags, mentions, and calls-to-action.
-  - For low-performing tweets, identify weaknesses (e.g., vague text, no visuals, off-brand topics).
-
-#### 3. Identify Content Patterns
+#### 2. Identify Content Patterns
 - **Themes and Topics**:
   - Extract recurring topics from high-performing tweets (e.g., AI, automation, marketing) by analyzing \`text\`, \`hashtags\`, and \`mentions\`.
   - Use the \`profile.biography\` and \`profile.website\` to confirm the account’s niche (e.g., tech, business).
@@ -81,27 +65,25 @@ The JSON represents a sample of the account’s recent tweets (e.g., up to 300 t
   - Determine which elements drive specific metrics (e.g., visuals for retweets, questions for replies, technical tips for bookmarks).
   - Note any trend-surfing behavior (e.g., referencing new tools or events).
 
-#### 4. Create Next Post
+#### 3. Create Next Post
 - Based on the previous steps, your job is to ROLE-PLAY the account and generate a JSON template for a new post. The post should:
   - Align with the account’s voice and style.
   - Be relevant to the audience and niche.
-  - Follow the identified content patterns and structures.
+  - YOU MUST follow the identified content patterns and structures.
 
-#### 5. Output Format
+#### 4. Output Format
 Return the generated JSON template in the following format:
 \`\`\`json
 {
   "post": {
     "text": {
       // Generated post text
-    },
-    "notes": "Any additional observations"
+    }
   }
 }
 \`\`\`
 
 ### Final Notes
-- Use the tweet data as the sole source for patterns unless external trend data is explicitly available.
 - Make sure to ROLE-PLAY the account’s persona and voice in the generated post, ensuring it feels authentic and human, never breaking character.
 
 Now, generate a JSON post based on the provided scraped tweet JSON. 

@@ -219,7 +219,7 @@ if (values["generate-tweet"]) {
     log.success(`Successfully generated new Post Data.`);
     log.info(
       chalk.cyanBright("Generated post data:\n") +
-        chalk.greenBright(tweets.join("\n")),
+        chalk.greenBright(tweets.join("\n----------------\n")),
     );
   });
   process.exit(0);

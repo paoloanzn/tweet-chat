@@ -1,5 +1,5 @@
 import { createOpenAI } from "@ai-sdk/openai";
-import { streamText } from "ai";
+import { generateObject, streamText } from "ai";
 
 export enum ModelProvider {
   OPENAI = "openai",
@@ -12,7 +12,7 @@ export const isValidProvider = (value: string): value is ModelProvider => {
 // right now there is a problem in supporting reasoning model
 // we can't correctly write the stream to the stdout for those models
 export const Models = Object.freeze({
-  [ModelProvider.OPENAI]: ["gpt-4.1", "gpt-4o", "gpt-4.5"],
+  [ModelProvider.OPENAI]: ["gpt-4.1", "gpt-4o", "gpt-4.5-preview-2025-02-27"],
 });
 
 export interface ModelSettings {
@@ -39,8 +39,16 @@ export interface GenerateTextResult {
   readonly text: string | null;
 }
 
+export interface GenerateObjectResult {
+  readonly success: boolean;
+  readonly message: string | null;
+  readonly object: any | null;
+}
+
 export interface Model {
   readonly settings: ModelSettings;
+
+  generateObject(prompt: string): Promise<GenerateObjectResult>;
 
   generateText(
     prompt: string,
@@ -90,6 +98,54 @@ export const createModel = ({
       maxOutputTokens,
       presencePenalty,
       frequencyPenalty,
+    },
+
+    generateObject: async (prompt: string) => {
+      try {
+        switch (provider) {
+          case ModelProvider.OPENAI:
+            if (!process.env.OPENAI_API_KEY) {
+              return {
+                success: false,
+                message: "OPENAI_API_KEY is not set",
+                object: null,
+              };
+            }
+            const openai = createOpenAI({
+              apiKey: process.env.OPENAI_API_KEY,
+              compatibility: "strict",
+            });
+
+            const { object } = await generateObject({
+              model: openai(name),
+              output: "no-schema",
+              prompt: prompt,
+              temperature,
+              maxTokens: maxOutputTokens,
+              presencePenalty,
+              frequencyPenalty,
+            });
+
+            return {
+              success: true,
+              message: null,
+              object: object,
+            };
+
+          default:
+            return {
+              success: false,
+              message: `Unsupported provider: ${provider}`,
+              object: null,
+            };
+        }
+      } catch (error: any) {
+        return {
+          success: false,
+          message: `Error: ${error}`,
+          object: null,
+        };
+      }
     },
 
     generateText: async (

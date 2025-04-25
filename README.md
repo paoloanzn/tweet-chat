@@ -7,6 +7,7 @@ A command-line tool to scrape Twitter profiles, distill tweets, and generate AI-
 - **Twitter Scraping**: Authenticate with Twitter credentials, scrape user profiles and tweets, and save them to a JSON file.
 - **Persona Generation**: Analyze scraped tweets to create a persona using AI models (e.g., OpenAI's GPT models) for realistic chat simulation.
 - **Interactive Chat**: Engage in conversations with the generated persona, mimicking the Twitter account's style and tone.
+- **Tweet Generation**: Generate original content using scraped tweets to role-play as a specific account.
 - **Caching**: Cache personas to avoid redundant AI processing for unchanged profiles.
 - **Cross-Platform**: Run natively or via Docker, with precompiled binaries for macOS, Linux, and Windows.
 - **CLI Interface**: Interactive prompts for easy configuration of usernames, tweet counts, and AI model settings.
@@ -77,7 +78,7 @@ OPENAI_API_KEY=your_openai_api_key
 Run the tool via the CLI with Bun or as a binary:
 
 ```bash
-tweet-chat --username <twitter_username> [--tweets <number_of_tweets>] [--scrape] [--no-cache]
+tweet-chat --username <twitter_username> [--tweets <number_of_tweets>] [--scrape] [--no-cache] [--generate-tweet]
 ```
 
 ### Options
@@ -86,6 +87,7 @@ tweet-chat --username <twitter_username> [--tweets <number_of_tweets>] [--scrape
 - `--tweets <number_of_tweets>`: Maximum number of tweets to scrape (default: 10, max: 300).
 - `--scrape`: Scrape tweets and save to a JSON file without generating a persona or starting a chat.
 - `--no-cache`: Ignore cached personas and regenerate a new one.
+- `--generate-tweet`: Generate a tweet(s) using scraped tweets without generating a persona or starting a chat.
 
 ### Interactive Mode
 

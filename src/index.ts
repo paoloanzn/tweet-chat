@@ -214,7 +214,7 @@ if (values["generate-tweet"]) {
         null,
         2,
       );
-      const unescapedText = text.replace(/\\n/g, '\n').replace(/^"|"$/g, ''); 
+      const unescapedText = text.replace(/\\n/g, "\n").replace(/^"|"$/g, "");
       tweets.push(unescapedText);
     }
     log.success(`Successfully generated new Post Data.`);

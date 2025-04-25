@@ -76,9 +76,7 @@ Return the generated JSON template in the following format:
 \`\`\`json
 {
   "post": {
-    "text": {
-      // Generated post text
-    }
+    "text": "Your generated post text here",
   }
 }
 \`\`\`

@@ -12,7 +12,7 @@ export const isValidProvider = (value: string): value is ModelProvider => {
 // right now there is a problem in supporting reasoning model
 // we can't correctly write the stream to the stdout for those models
 export const Models = Object.freeze({
-  [ModelProvider.OPENAI]: ["gpt-4.1", "gpt-4o", "gpt-4.5"],
+  [ModelProvider.OPENAI]: ["gpt-4.1", "gpt-4o", "gpt-4.5-preview-2025-02-27"],
 });
 
 export interface ModelSettings {

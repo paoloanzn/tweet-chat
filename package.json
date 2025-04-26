@@ -1,13 +1,20 @@
 {
   "name": "tweet-chat",
+  "productName": "Tweet Chat",
   "private": true,
   "version": "1.0.0",
   "type": "module",
+  "main": "dist-electron/main.js",
   "scripts": {
     "format": "prettier --write ./**/*.{js,html,ts,css,json}",
     "dev": "vite",
     "build": "vue-tsc -b && vite build",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "transpile:electron": "tsc --project src/electron/tsconfig.json",
+    "build:mac": "npm run transpile:electron && npm run build && electron-builder --mac --arm64",
+    "build:linux": "npm run transpile:electron && npm run build && electron-builder --linux --x64",
+    "build:windows": "npm run transpile:electron && npm run build && electron-builder --windows --x64",
+    "build:all": "npm run transpile:electron && npm run build && electron-builder --mac --arm64 --linux --windows"
   },
   "dependencies": {
     "@primeuix/themes": "^1.0.3",
@@ -22,9 +29,14 @@
     "@vitejs/plugin-vue": "^5.2.2",
     "@vue/tsconfig": "^0.7.0",
     "electron": "^35.2.1",
+    "electron-builder": "^26.0.12",
     "prettier": "^3.5.3",
     "typescript": "~5.7.2",
     "vite": "^6.3.1",
     "vue-tsc": "^2.2.8"
+  },
+  "build": {
+    "appId": "com.paoloanzn.tweet-chat",
+    "files": ["dist-electron", "dist"]
   }
 }

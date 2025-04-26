@@ -5,9 +5,9 @@ import Menu from "./Menu.vue";
 import ExamplePrompts from "./ExamplePrompts.vue";
 
 const prompts = [
-  "What is the meaning of life?",
-  "Tell me a joke.",
-  "What is your favorite color?",
+  "Help me plan a winning content strategy",
+  "What have you been up to?",
+  "What's your @?",
 ];
 </script>
 

@@ -1,16 +1,20 @@
-FROM oven/bun:latest
+FROM node:20
 
 WORKDIR /app
 
-# Copy initialization script
+# Copy entrypoint script
 COPY docker-entrypoint.sh /usr/local/bin/
 RUN chmod +x /usr/local/bin/docker-entrypoint.sh
 
-# Install dependencies first (if they exist)
-COPY package.json* bun.lockb* ./
-RUN if [ -f package.json ]; then bun install; fi
+# Copy package.json and package-lock.json
+COPY package.json* package-lock.json* ./
+RUN if [ -f package.json ]; then npm i; fi
 
-# Copy source code
+# Copy the rest of the project
 COPY . .
 
+EXPOSE 5173
+
+# Set entrypoint
 ENTRYPOINT ["docker-entrypoint.sh"]
+CMD ["/bin/bash"]

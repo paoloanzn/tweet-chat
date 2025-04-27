@@ -8,6 +8,7 @@
   "scripts": {
     "format": "prettier --write ./**/*.{js,html,ts,css,json}",
     "dev": "vite",
+    "dev:electron": "electron . --no-sandbox",
     "build": "vue-tsc -b && vite build",
     "preview": "vite preview",
     "transpile:electron": "tsc --project src/electron/tsconfig.json",

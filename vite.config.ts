@@ -9,4 +9,8 @@ export default defineConfig({
     outDir: "dist",
   },
   plugins: [vue(), tailwindcss()],
+  server: {
+    port: 5123,
+    strictPort: true,
+  },
 });

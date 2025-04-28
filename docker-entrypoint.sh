@@ -12,4 +12,8 @@ if [ ! -d node_modules ] || [ package.json -nt node_modules ]; then
 	npm i
 fi
 
+# Build
+npm run $BUILD_TARGET
+
+
 exec "$@"

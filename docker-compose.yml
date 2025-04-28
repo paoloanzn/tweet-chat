@@ -1,10 +1,9 @@
 services:
-  app:
-    build: .
-    volumes:
-      - .:/app
+  build:
+    build:
+      context: .
+      args:
+        - BUILD_TARGET=${BUILD_TARGET:-build}
     working_dir: /app
-    ports:
-      - "5173:5173"
-    stdin_open: true
-    tty: true
+    volumes:
+      - ./dist:/host-dist

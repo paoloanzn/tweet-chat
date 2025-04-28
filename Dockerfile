@@ -1,25 +1,24 @@
-FROM node:20
+FROM arm64v8/node:22.15-alpine AS builder
 
 WORKDIR /app
-
-# Install electron required deps (not necessary for build-only images)
-RUN apt-get update && apt-get install \
-    libx11-xcb1 libxcb-dri3-0 libxtst6 libnss3 libatk-bridge2.0-0 libgtk-3-0 libgtkextra-dev libgconf2-dev libasound2 libxtst-dev libxss1 libgbm1 \
-    -y
 
 # Copy entrypoint script
 COPY docker-entrypoint.sh /usr/local/bin/
 RUN chmod +x /usr/local/bin/docker-entrypoint.sh
 
-# Copy package.json and package-lock.json
-COPY package.json* package-lock.json* ./
+# Copy package.json
+COPY package.json* ./
 RUN if [ -f package.json ]; then npm i; fi
 
 # Copy the rest of the project
 COPY . .
 
-EXPOSE 5173
+# Default build target
+ARG BUILD_TARGET=build:all
 
-# Set entrypoint
-ENTRYPOINT ["docker-entrypoint.sh"]
-CMD ["/bin/bash"]
+RUN docker-entrypoint.sh
+
+FROM alpine:latest
+WORKDIR /output
+COPY --from=builder /app/dist ./dist
+CMD ["sh", "-c", "cp -r /output/dist/ /host-dist"]

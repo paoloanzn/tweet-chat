@@ -24,3 +24,4 @@ dist-vite
 *.njsproj
 *.sln
 *.sw?
+codebase.md

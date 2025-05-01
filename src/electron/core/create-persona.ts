@@ -29,7 +29,7 @@ const logger = getLogger();
 export const createPersona = async ({
   twitterHandle,
   maxTweets,
-}: createPersonaOptions): Promise<void> => {
+}: createPersonaOptions): Promise<boolean> => {
   const profile = await scrapeTwitterProfile(twitterHandle, maxTweets);
 
   const settings: ModelSettings = {
@@ -41,7 +41,7 @@ export const createPersona = async ({
   const createModelResult = createModel(settings);
   if (!createModelResult.success) {
     logger.error(`Error while creating Ai model: ${createModelResult.message}`);
-    return;
+    return false;
   }
   const model: Model = createModelResult.model!;
   const context: Context = newContext(createPersonaTemplate);
@@ -54,7 +54,7 @@ export const createPersona = async ({
   );
   if (!generateTextResult.success) {
     logger.error(`Error while generating text: ${generateTextResult.message}`);
-    return;
+    return false;
   }
 
   logger.info(`Successfully generated new Persona.`);
@@ -69,5 +69,8 @@ export const createPersona = async ({
   });
   if (!storeResult.success) {
     logger.error(storeResult.message ?? "");
+    return false;
   }
+
+  return true;
 };

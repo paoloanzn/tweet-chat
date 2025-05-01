@@ -1,7 +1,7 @@
 export interface MessageModel {
   readonly sender: "user" | "assistant";
   readonly text: string;
-  readonly timestamp: string;
+  readonly timestamp: number;
   readonly id: string;
 }
 
@@ -15,8 +15,8 @@ export interface PersonaModel {
 
 export interface ConversationModel {
   readonly id: string;
-  readonly createdAt: number;
-  readonly updatedAt: number;
-  readonly messages: MessageModel[];
+  createdAt: number;
+  updatedAt: number;
+  messages: MessageModel[];
   readonly personaId: string;
 }

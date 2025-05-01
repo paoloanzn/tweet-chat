@@ -1,22 +1,68 @@
+// src/components/Home.vue
 <script setup lang="ts">
-defineProps<{ msg: string }>();
-import Chat from "./Chat.vue";
+import { onMounted, ref, onUnmounted } from "vue";
+import ChatBox from "./ChatBox.vue";
 import Menu from "./Menu.vue";
-import ExamplePrompts from "./ExamplePrompts.vue";
+import Chat from "./Chat.vue";
+import CredentialsSetup from "./CredentialsSetup.vue";
+import { state } from "../state"; // Import state
 
-const prompts = [
-  "Help me plan a winning content strategy",
-  "What have you been up to?",
-  "What's your @?",
-];
+defineProps<{ msg: string }>();
+
+const isUserloggedIn = ref<Boolean>(false);
+const isLoading = ref(true);
+let removeMessageChunkListener: (() => void) | null = null; // To store the cleanup function
+
+onMounted(async () => {
+  isLoading.value = true; // Set loading true at the start
+  try {
+    isUserloggedIn.value = await window.electronAPI.core.attemptLogin();
+
+    // *** Set up the listener for message chunks ***
+    if (isUserloggedIn.value) {
+      const listenerResult = window.electronAPI.core.handleMessageChunk(
+        (receivedConversationId: string, textPart: string) => {
+          // Only update if the chunk is for the currently active conversation
+          if (state.activeConversationId === receivedConversationId) {
+            state.updateLastMessageInActiveConversation(textPart);
+          }
+        },
+      );
+      removeMessageChunkListener =
+        typeof listenerResult === "function" ? listenerResult : null;
+    }
+  } catch (error) {
+    console.error("Error during login or listener setup:", error);
+    isUserloggedIn.value = false; // Ensure logged out state on error
+  } finally {
+    isLoading.value = false;
+  }
+});
+
+// Clean up the listener when the component is unmounted
+onUnmounted(() => {
+  if (removeMessageChunkListener) {
+    removeMessageChunkListener();
+    console.log("Removed message chunk listener.");
+  }
+});
 </script>
 
 <template>
-  <div class="flex flex-col justify-between items-center h-screen bg-neutral-800">
-    <Menu />
-    <div class="flex flex-row">
-        <ExamplePrompts v-for="(prompt, index) in prompts" :key="index" :content="prompt" />
-    </div>
-    <Chat />
+  <div v-if="isLoading" class="flex h-screen items-center justify-center">
+    <span class="pi pi-spin pi-spinner-dotted text-neutral-500 text-3xl"></span>
   </div>
+  <template v-else>
+    <div
+      v-if="isUserloggedIn"
+      class="flex flex-col items-center h-screen bg-neutral-100 overflow-hidden"
+    >
+      <Menu />
+      <div class="flex flex-col w-full flex-grow min-h-0">
+        <Chat />
+        <ChatBox />
+      </div>
+    </div>
+    <CredentialsSetup v-else />
+  </template>
 </template>

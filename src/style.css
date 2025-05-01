@@ -1,7 +1,6 @@
 @import "tailwindcss";
 @import "tailwindcss-primeui";
-@import 'primeicons/primeicons.css';
-
+@import "primeicons/primeicons.css";
 
 :root {
   font-family: system-ui, Avenir, Helvetica, Arial, sans-serif;
@@ -10,7 +9,7 @@
 
   color-scheme: light dark;
   color: rgba(255, 255, 255, 0.87);
-  background-color: #242424;
+  background-color: #ffffff;
 
   font-synthesis: none;
   text-rendering: optimizeLegibility;
@@ -42,5 +41,33 @@ body {
   }
   button {
     background-color: #f9f9f9;
+  }
+}
+
+::selection {
+  background: rgba(159, 159, 169, 0.4);
+}
+
+.drag-region {
+  app-region: drag;
+}
+
+button {
+  app-region: no-drag;
+}
+
+input {
+  app-region: no-drag;
+}
+
+@layer utilities {
+  /* Chrome, Safari and Opera */
+  .no-scrollbar::-webkit-scrollbar {
+    display: none;
+  }
+
+  .no-scrollbar {
+    -ms-overflow-style: none; /* IE and Edge */
+    scrollbar-width: none; /* Firefox */
   }
 }

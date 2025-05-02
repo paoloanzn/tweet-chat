@@ -2,7 +2,8 @@ import * as packagejson from "../../../../package.json" with { type: "json" };
 import { safeStorage } from "electron";
 import Store from "electron-store";
 
-const SERVICE = packagejson.default.name ?? "tweet-chat";
+// @ts-ignore
+const SERVICE = packagejson.name ?? "tweet-chat";
 
 export interface SecretStore {
   get(identifier: string): Promise<string | null>;

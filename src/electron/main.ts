@@ -7,7 +7,7 @@ import { generateNextMessage } from "./core/messages.js";
 import { getSecretStore } from "./services/store/secret.js";
 import { attemptLogin } from "./core/utils.js";
 import { getPreloadPath } from "./pathResolver.js";
-import * as packageInfo from "../../package.json" with { type: "json" };
+import * as packageInfo from "../../package.json" with { type: "json" }
 
 let mainWindow: BrowserWindow | null = null;
 
@@ -15,7 +15,8 @@ app.on("ready", () => {
   mainWindow = new BrowserWindow({
     width: 800,
     height: 1000,
-    title: packageInfo.default.productName,
+    // @ts-ignore
+    title: packageInfo.productName,
     titleBarStyle: "hidden",
     webPreferences: {
       preload: getPreloadPath(),

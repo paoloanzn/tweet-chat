@@ -1,6 +1,5 @@
 import { type Profile, type Tweet } from "agent-twitter-client";
 import { getScraper } from "../twitter/scraper.js";
-import { writeFileSync } from "fs";
 
 export interface DistillConfiguration {
   readonly username: string;

@@ -4,14 +4,14 @@ import { chatTemplate } from "../services/ai/prompts.js";
 import {
   createModel,
   defaultConfig,
-  Model,
+  type Model,
   ModelProvider,
-  ModelSettings,
+  type ModelSettings,
 } from "../services/ai/provider.js";
-import { Context, newContext } from "../services/ai/template.js";
-import { MessageModel } from "../services/store/models.js";
+import { type Context, newContext } from "../services/ai/template.js";
+import { type MessageModel } from "../services/store/models.js";
 import { getSafeStore } from "../services/store/store.js";
-import { getLogger, timestamp } from "../services/utils/logger.js";
+import { getLogger } from "../services/utils/logger.js";
 
 const logger = getLogger();
 

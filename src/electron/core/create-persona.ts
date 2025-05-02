@@ -1,11 +1,11 @@
 import {
   createModel,
   defaultConfig,
-  Model,
   ModelProvider,
-  ModelSettings,
+  type Model,
+  type ModelSettings,
 } from "../services/ai/provider.js";
-import { Context, newContext } from "../services/ai/template.js";
+import { type Context, newContext } from "../services/ai/template.js";
 import { createPersonaTemplate } from "../services/ai/prompts.js";
 import { getLogger } from "../services/utils/logger.js";
 import { getSafeStore } from "../services/store/store.js";

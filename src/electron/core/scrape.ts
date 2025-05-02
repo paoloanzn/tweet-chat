@@ -1,8 +1,8 @@
-import { distill, DistilledProfile } from "../services/twitter/distill.js";
+import { distill, type DistilledProfile } from "../services/twitter/distill.js";
 import {
   getCredentials,
   login,
-  TwitterCredentials,
+  type TwitterCredentials,
 } from "../services/twitter/login.js";
 import { getLogger } from "../services/utils/logger.js";
 

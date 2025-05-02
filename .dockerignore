@@ -1,3 +1,5 @@
-node_modules/
-dist/
-dist-electron/
+node_modules
+dist
+dist-electron
+.git
+.env

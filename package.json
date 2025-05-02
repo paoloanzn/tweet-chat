@@ -1,8 +1,9 @@
 {
   "name": "tweet-chat",
   "productName": "Tweet Chat",
+  "author": "Paolo Anzani",
   "private": true,
-  "version": "1.0.0",
+  "version": "2.0.0-alpha",
   "type": "module",
   "main": "dist-electron/src/electron/main.js",
   "scripts": {
@@ -17,7 +18,7 @@
     "build:linux": "npm run transpile:electron && npm run build && electron-builder --linux --x64",
     "build:windows": "npm run transpile:electron && npm run build && electron-builder --windows --x64",
     "build:all": "npm run transpile:electron && npm run build && electron-builder --mac --arm64 --linux --windows",
-    "clean": "rimraf dist-electron && rimraf dist"
+    "clean": "npx rimraf dist-electron && npx rimraf dist"
   },
   "dependencies": {
     "@ai-sdk/openai": "^1.3.20",

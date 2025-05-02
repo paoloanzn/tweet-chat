@@ -1,11 +1,11 @@
-import path from "path";
-import { app } from "electron";
-import { isDev } from "./util.js";
+import path from 'path';
+import { fileURLToPath } from 'url';
+
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 export const getPreloadPath = () => {
-  return path.join(
-    app.getAppPath(),
-    isDev() ? "." : "..",
-    "/dist-electron/src/electron/preload.cjs",
-  );
+  // Assuming preload.cjs is compiled into the same directory as main.js
+  return path.join(__dirname, 'preload.cjs');
 };

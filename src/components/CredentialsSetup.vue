@@ -1,7 +1,6 @@
 <script setup lang="ts">
 import { ref, onMounted, watch, onUpdated } from "vue";
 import { motion } from "motion-v";
-import type { RefSymbol } from "@vue/reactivity";
 import { state } from "../state";
 
 const electronAPI = window.electronAPI;

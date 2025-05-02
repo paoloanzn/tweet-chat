@@ -46,6 +46,7 @@ Download the latest release for your operating system (macOS, Linux, Windows) fr
     ```bash
     npm run build:<target_platform>
     ```
+
     The packaged application will be in the `dist_electron` or a similar directory created by `electron-builder`.
 
 ### Docker Build
@@ -57,20 +58,24 @@ Refer to the `Dockerfile`, `docker-compose.yml`, and `docker-build.sh` script fo
 ```
 
 ### 🖱️ Usage
+
 1. Launch the Tweet Chat application executable.
 2. On the first run, you will likely be prompted to enter your Twitter credentials and OpenAI API key through a setup screen.
 3. Use the main interface:
-    -   Select/Manage Personas (⌘P): Choose an existing persona from the dropdown menu or search for one.
-    - Add New Persona (⌘N): Click the "Add new" option in the persona dropdown to scrape a new Twitter handle and generate its persona.
-    - View Conversation History (⌘H): Access past chats for the currently selected persona.
-    - Chat: Type your message in the input box at the bottom (focus with ⌘I) and press Enter or click the send button to chat with the selected persona. Responses from the AI will stream into the chat window.
+   - Select/Manage Personas (⌘P): Choose an existing persona from the dropdown menu or search for one.
+   - Add New Persona (⌘N): Click the "Add new" option in the persona dropdown to scrape a new Twitter handle and generate its persona.
+   - View Conversation History (⌘H): Access past chats for the currently selected persona.
+   - Chat: Type your message in the input box at the bottom (focus with ⌘I) and press Enter or click the send button to chat with the selected persona. Responses from the AI will stream into the chat window.
 
 ### 🛠️ Development
+
 #### Setup
+
 1. Clone the repository and navigate to the project directory.
 2. Install dependencies: `npm install`.
 
 #### Running in Development Mode
+
 Run the Vite frontend development server and the Electron app concurrently:
 
 ```bash
@@ -80,6 +85,7 @@ npm run dev
 This uses `npm-run-all` to start `dev:vite` and `dev:electron` in parallel.
 
 #### Formatting
+
 Format the code using Prettier:
 
 ```bash
@@ -87,6 +93,7 @@ npm run format
 ```
 
 #### Project Structure
+
 - `dist/`: Vite build output (frontend).
 - `dist-electron/`: Electron build output (packaged app).
 - `src/`: Contains the Vue.js frontend code (components, `main.ts`, `state.ts`, etc.).
@@ -96,9 +103,11 @@ npm run format
 - `tsconfig.*.json`: TypeScript configurations.
 
 #### Building Binaries
+
 Use the `npm run build:*` commands as described in the Installation section to package the application for different platforms using `electron-builder`.
 
 ### 📝 Notes
+
 - The application relies on `agent-twitter-client` for scraping, which might be affected by changes in Twitter's private API or login mechanisms.
 - AI model support currently focuses on OpenAI models via `@ai-sdk/openai` (e.g., gpt-4.1, gpt-4o). See `src/electron/services/ai/provider.ts`.
 - Conversation history is stored locally using `electron-store`. The number of messages per conversation is limited (see `src/electron/services/store/store.ts`).
@@ -106,6 +115,5 @@ Use the `npm run build:*` commands as described in the Installation section to p
 - Long term support is NOT guaranteed.
 
 ### 📄 License
+
 MIT License. See the https://www.google.com/search?q=LICENSE file for details.
-
-

@@ -1,5 +1,9 @@
 import Store from "electron-store";
-import type { ConversationModel, MessageModel, PersonaModel } from "./models.js";
+import type {
+  ConversationModel,
+  MessageModel,
+  PersonaModel,
+} from "./models.js";
 
 const MESSAGE_LIMIT = 30;
 

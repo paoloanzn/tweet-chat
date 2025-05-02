@@ -91,7 +91,9 @@
       "category": "Productivity"
     },
     "win": {
-      "target": ["portable"]
+      "target": [
+        "portable"
+      ]
     }
   }
 }

@@ -7,7 +7,7 @@ import { generateNextMessage } from "./core/messages.js";
 import { getSecretStore } from "./services/store/secret.js";
 import { attemptLogin } from "./core/utils.js";
 import { getPreloadPath } from "./pathResolver.js";
-import * as packageInfo from "../../package.json" with { type: "json" }
+import * as packageInfo from "../../package.json" with { type: "json" };
 
 let mainWindow: BrowserWindow | null = null;
 

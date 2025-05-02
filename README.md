@@ -43,28 +43,10 @@ Download the latest release for your operating system (macOS, Linux, Windows) fr
     ```
 3.  **Build the application:**
 
-    - **Build frontend and transpile Electron code:**
-      ```bash
-      npm run build
-      npm run transpile:electron
-      ```
-    - **Package for your platform:**
-
-      ````bash # For macOS (ARM64)
-      npm run build:mac
-
-          # For Linux (x64)
-          npm run build:linux
-
-          # For Windows (x64)
-          npm run build:windows
-
-          # For all platforms
-          npm run build:all
-          ```
-
-      The packaged application will be in the `dist_electron` or a similar directory created by `electron-builder`.
-      ````
+    ```bash
+    npm run build:<target_platform>
+    ```
+    The packaged application will be in the `dist_electron` or a similar directory created by `electron-builder`.
 
 ### Docker Build
 

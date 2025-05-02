@@ -2,6 +2,7 @@
   "name": "tweet-chat",
   "productName": "Tweet Chat",
   "author": "Paolo Anzani",
+  "description": "AI powered chat with your own favorites Twitter accounts.",
   "private": true,
   "version": "2.0.0-alpha",
   "type": "module",
@@ -11,13 +12,14 @@
     "dev": "npm-run-all --parallel dev:electron dev:vite",
     "dev:vite": "vite",
     "dev:electron": "npm run transpile:electron; cross-env NODE_ENV=development electron . --no-sandbox",
-    "build": "vue-tsc -b && vite build",
+    "build": "npm run transpile:electron && vue-tsc -b && vite build",
     "preview": "vite preview",
     "transpile:electron": "tsc --project src/electron/tsconfig.json",
-    "build:mac": "npm run transpile:electron && npm run build && electron-builder --mac --arm64",
-    "build:linux": "npm run transpile:electron && npm run build && electron-builder --linux --x64",
-    "build:windows": "npm run transpile:electron && npm run build && electron-builder --windows --x64",
-    "build:all": "npm run transpile:electron && npm run build && electron-builder --mac --arm64 --linux --windows",
+    "build:mac": "npm run build && electron-builder --mac --arm64",
+    "build:linux": "npm run build && electron-builder --linux --x64",
+    "build:windows": "npm run build && electron-builder --windows --x64",
+    "build:all:arm64": "npm run build && electron-builder --mac --linux --windows --arm64",
+    "build:all:x64": "npm run build && electron-builder --mac --linux --windows --x64",
     "clean": "npx rimraf dist-electron && npx rimraf dist"
   },
   "dependencies": {
@@ -56,11 +58,40 @@
     "vite": "^6.3.1",
     "vue-tsc": "^2.2.8"
   },
+  "bundledDependencies": [
+    "@ai-sdk/openai",
+    "@primeuix/themes",
+    "@tailwindcss/vite",
+    "agent-twitter-client",
+    "ai",
+    "chalk",
+    "date-fns",
+    "dateformat",
+    "electron-store",
+    "motion-v",
+    "primeicons",
+    "primevue",
+    "tailwindcss",
+    "tailwindcss-primeui",
+    "uuid",
+    "vue"
+  ],
   "build": {
     "appId": "com.paoloanzn.tweet-chat",
     "files": [
       "dist-electron",
       "dist"
-    ]
+    ],
+    "icon": "./icons/desktop-icon.png",
+    "mac": {
+      "target": "dmg"
+    },
+    "linux": {
+      "target": "AppImage",
+      "category": "Productivity"
+    },
+    "win": {
+      "target": ["portable"]
+    }
   }
 }

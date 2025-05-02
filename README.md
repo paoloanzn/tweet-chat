@@ -1,167 +1,109 @@
-# Tweet Chat
+# Tweet Chat V2
 
-A command-line tool to scrape Twitter profiles, distill tweets, and generate AI-driven personas for interactive chat based on Twitter accounts. It uses modern AI models to analyze tweet content and simulate conversations as if you were chatting with the Twitter account holder.
+<div align="center">
+    <img src="./header-img.png" width="100%" height="100%">
+    <i>AI powered chat with your own favorites Twitter accounts.</i>
+</div>
 
-## Features
+## ✨ Features
 
-- **Twitter Scraping**: Authenticate with Twitter credentials, scrape user profiles and tweets, and save them to a JSON file.
-- **Persona Generation**: Analyze scraped tweets to create a persona using AI models (e.g., OpenAI's GPT models) for realistic chat simulation.
-- **Interactive Chat**: Engage in conversations with the generated persona, mimicking the Twitter account's style and tone.
-- **Tweet Generation**: Generate original content using scraped tweets to role-play as a specific account.
-- **Caching**: Cache personas to avoid redundant AI processing for unchanged profiles.
-- **Cross-Platform**: Run natively or via Docker, with precompiled binaries for macOS, Linux, and Windows.
-- **CLI Interface**: Interactive prompts for easy configuration of usernames, tweet counts, and AI model settings.
+- 🖥️ User-friendly GUI for managing personas and chats.
+- 🐦 Secure Twitter scraping for profiles and tweets.
+- 🤖 AI-generated personas based on tweets.
+- 💬 Chat with personas mimicking Twitter styles.
+- 🗂️ Manage and view chat history.
+- 🔒 Secure storage for credentials and API keys.
+- 🌐 Cross-platform support for macOS, Linux, and Windows.
 
-## Prerequisites
+## 📋 Prerequisites
 
-- **Bun**: A fast JavaScript runtime (install from [bun.sh](https://bun.sh/)).
-- **Docker**: Optional, for containerized execution (install from [docker.com](https://www.docker.com/)).
-- **Twitter Credentials**: Username, password, and email for scraping tweets.
-- **OpenAI API Key**: Required for AI persona generation and chat (set as `OPENAI_API_KEY` in `.env`).
+- **Node.js**: Required for development and building (check `package.json` for specific version compatibility).
+- **Docker**: Optional, for containerized building (see `Dockerfile` and related scripts).
+- **Twitter Credentials**: Username, password, and email are required for the initial login to enable scraping. These are stored securely within the application.
+- **OpenAI API Key**: Required for AI persona generation and chat features. This key is also stored securely within the application.
 
-## Installation
+## 🚀 Installation
 
-### Automated Installation
+### Pre-built Binaries (Recommended)
 
-Download and install the latest binary for your platform:
+Download the latest release for your operating system (macOS, Linux, Windows) from the project's [GitHub Releases](https://github.com/paoloanzn/tweet-chat/releases) page (link to be updated once releases are available).
 
-```bash
-curl -fsSL https://raw.githubusercontent.com/paoloanzn/tweet-chat/main/install.sh | bash
-```
+### Manual Build
 
-This installs the `tweet-chat` binary to `/usr/local/bin`.
+1.  **Clone the repository:**
+    ```bash
+    git clone https://github.com/paoloanzn/tweet-chat.git
+    cd tweet-chat
+    ```
+2.  **Install dependencies:**
+    ```bash
+    npm install
+    ```
+3.  **Build the application:**
 
-### Manual Installation
+    ```bash
+    npm run build:<target_platform>
+    ```
+    The packaged application will be in the `dist_electron` or a similar directory created by `electron-builder`.
 
-1. Clone the repository:
+### Docker Build
 
-```bash
-git clone https://github.com/paoloanzn/tweet-chat.git
-```
-
-2. Navigate to the project directory:
-
-```bash
-cd tweet-chat 
-```
-
-3. Install dependencies:
-
-```bash
-bun install
-```
-
-### Docker Installation
-
-Build and run with Docker Compose:
+Refer to the `Dockerfile`, `docker-compose.yml`, and `docker-build.sh` script for building within a Docker container. You'll need to provide the appropriate build target as an argument to the build script. Example:
 
 ```bash
-docker-compose up
+./docker-build.sh "build:mac -- --dir"
 ```
 
-## Configuration
+### 🖱️ Usage
+1. Launch the Tweet Chat application executable.
+2. On the first run, you will likely be prompted to enter your Twitter credentials and OpenAI API key through a setup screen.
+3. Use the main interface:
+    -   Select/Manage Personas (⌘P): Choose an existing persona from the dropdown menu or search for one.
+    - Add New Persona (⌘N): Click the "Add new" option in the persona dropdown to scrape a new Twitter handle and generate its persona.
+    - View Conversation History (⌘H): Access past chats for the currently selected persona.
+    - Chat: Type your message in the input box at the bottom (focus with ⌘I) and press Enter or click the send button to chat with the selected persona. Responses from the AI will stream into the chat window.
 
-Create a `.env` file in the project root with the following:
+### 🛠️ Development
+#### Setup
+1. Clone the repository and navigate to the project directory.
+2. Install dependencies: `npm install`.
 
-```
-TWITTER_USERNAME=your_twitter_username
-TWITTER_PASSWORD=your_twitter_password
-TWITTER_EMAIL=your_twitter_email
-OPENAI_API_KEY=your_openai_api_key
-```
-
-- Twitter credentials are used for scraping and saved cookies are stored in `.env` for reuse.
-- The OpenAI API key is required for AI features.
-
-## Usage
-
-Run the tool via the CLI with Bun or as a binary:
+#### Running in Development Mode
+Run the Vite frontend development server and the Electron app concurrently:
 
 ```bash
-tweet-chat --username <twitter_username> [--tweets <number_of_tweets>] [--scrape] [--no-cache] [--generate-tweet]
+npm run dev
 ```
 
-### Options
+This uses `npm-run-all` to start `dev:vite` and `dev:electron` in parallel.
 
-- `--username <twitter_username>`: The Twitter username to analyze (e.g., `@elonmusk`).
-- `--tweets <number_of_tweets>`: Maximum number of tweets to scrape (default: 10, max: 300).
-- `--scrape`: Scrape tweets and save to a JSON file without generating a persona or starting a chat.
-- `--no-cache`: Ignore cached personas and regenerate a new one.
-- `--generate-tweet`: Generate a tweet(s) using scraped tweets without generating a persona or starting a chat.
-
-### Interactive Mode
-
-If `--username` or `--tweets` are omitted, the CLI prompts for input, including AI model and provider selection (e.g., OpenAI's `gpt-4o`).
-
-### Example
-
-Scrape 20 tweets and chat with the persona:
+#### Formatting
+Format the code using Prettier:
 
 ```bash
-tweet-chat --username paoloanzn --tweets 20
+npm run format
 ```
 
-This:
-1. Logs in to Twitter.
-2. Scrapes up to 20 tweets and the profile of `@paoloanzn`.
-3. Saves the data to `paoloanzn.distilled.json`.
-4. Generates a persona using the selected AI model.
-5. Starts an interactive chat session.
+#### Project Structure
+- `dist/`: Vite build output (frontend).
+- `dist-electron/`: Electron build output (packaged app).
+- `src/`: Contains the Vue.js frontend code (components, `main.ts`, `state.ts`, etc.).
+- `src/electron/`: Contains the Electron main process (`main.ts`), preload script (`preload.cts`), core application logic (`core/`), and services (`services/` for AI, Twitter, Store, Utils).
+- `electron-builder.json` (or build key in `package.json`): Configuration for packaging the application.
+- `vite.config.ts`: Configuration for the Vite frontend build.
+- `tsconfig.*.json`: TypeScript configurations.
 
-Scrape only (no chat):
+#### Building Binaries
+Use the `npm run build:*` commands as described in the Installation section to package the application for different platforms using `electron-builder`.
 
-```bash
-tweet-chat --username paoloanzn --tweets 20 --scrape
-```
+### 📝 Notes
+- The application relies on `agent-twitter-client` for scraping, which might be affected by changes in Twitter's private API or login mechanisms.
+- AI model support currently focuses on OpenAI models via `@ai-sdk/openai` (e.g., gpt-4.1, gpt-4o). See `src/electron/services/ai/provider.ts`.
+- Conversation history is stored locally using `electron-store`. The number of messages per conversation is limited (see `src/electron/services/store/store.ts`).
+- This project is under active development, features and implementation details may change.
+- Long term support is NOT guaranteed.
 
-### Docker Usage
+### 📄 License
+MIT License. See the https://www.google.com/search?q=LICENSE file for details.
 
-Run with Docker Compose, passing arguments:
 
-```bash
-docker-compose run cli bun src/index.ts --username paoloanzn --tweets 20
-```
-
-## Output
-
-- **Scraped Data**: Saved as `<username>.distilled.json` with the profile and tweets.
-- **Persona**: Cached in the `cache/` directory as a JSON file, reused unless `--no-cache` is specified.
-- **Chat**: Interactive session in the terminal, with responses streamed from the AI model.
-
-## Development
-
-### Scripts
-
-- Format code: `bun run format`
-- Run in development: `bun run dev`
-- Cross-compile binaries: `bun run cross-compile`
-
-### Project Structure
-
-- `src/twitter/`: Handles Twitter login, scraping, and tweet distillation.
-- `src/ai/`: Manages AI model integration and persona generation.
-- `src/cli/`: Provides the interactive CLI interface.
-- `src/utils/`: Includes logging, caching, and environment utilities.
-- `src/index.ts`: Main entry point orchestrating the workflow.
-
-### Building Binaries
-
-Compile binaries for multiple platforms:
-
-```bash
-bun run cross-compile
-```
-
-Outputs binaries to the `out/` directory for macOS (arm64/x64), Linux (arm64/x64), and Windows (x64).
-
-## Notes
-
-- The project uses the `agent-twitter-client` library for scraping, which may require updates for Twitter API changes.
-- AI model support is currently limited to OpenAI (`gpt-4.1`, `gpt-4o`, `gpt-4.5`).
-- Persona caching is based on the username and the latest tweet ID to ensure freshness.
-- Maximum tweets are capped at 300 to balance performance and API limits.
-- This project is actively developed, and features may evolve. Check [GitHub](https://github.com/paoloanzn/tweet-chat) for updates.
-
-## License
-
-MIT License. See [LICENSE](LICENSE) for details.

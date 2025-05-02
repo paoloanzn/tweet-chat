@@ -1,16 +1,16 @@
-FROM oven/bun:latest
+FROM arm64v8/node:22.15-alpine
 
 WORKDIR /app
 
-# Copy initialization script
+# Copy entrypoint script first
 COPY docker-entrypoint.sh /usr/local/bin/
 RUN chmod +x /usr/local/bin/docker-entrypoint.sh
 
-# Install dependencies first (if they exist)
-COPY package.json* bun.lockb* ./
-RUN if [ -f package.json ]; then bun install; fi
+# Copy only package files
+COPY package.json package-lock.json* ./
 
-# Copy source code
+# Copy the rest of the application code (respecting .dockerignore)
 COPY . .
 
-ENTRYPOINT ["docker-entrypoint.sh"]
+# Set the entrypoint that handles setup and build
+ENTRYPOINT ["/usr/local/bin/docker-entrypoint.sh"]

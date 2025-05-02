@@ -18,8 +18,10 @@ export interface AppState {
   isLoadingConversations: boolean;
   activePersona: PersonaModel | null;
   activeConversation: ConversationModel | null;
+  showCredentialsSetup: boolean;
 
   // --- Actions ---
+  requestCredentialsReset: () => void;
   fetchAllPersonas: () => Promise<void>;
   fetchAllConversations: () => Promise<void>;
   setActivePersona: (personaId: string | null) => Promise<void>;
@@ -44,8 +46,13 @@ export const state = reactive<AppState>({
   isLoadingConversations: false,
   activePersona: null,
   activeConversation: null,
+  showCredentialsSetup: false,
 
   // --- Actions ---
+  requestCredentialsReset() {
+    this.showCredentialsSetup = true;
+  },
+
   async fetchAllPersonas() {
     this.isLoadingPersonas = true;
     try {
@@ -277,5 +284,17 @@ watch(
   (newId) => {
     state.activeConversation =
       state.conversations.find((c) => c.id === newId) ?? null;
+  },
+);
+
+watch(
+  () => state.showCredentialsSetup,
+  (_isRequested) => {
+    // If the app becomes logged in *while* reset is requested, cancel the request
+    // This handles cases where login happens without a full page reload in the future
+    // if (isUserLoggedIn.value && isRequested) { // Assuming isUserLoggedIn is accessible or passed here
+    //   state.isCredentialsResetRequested = false;
+    // }
+    // For now, the page reload handles the reset implicitly.
   },
 );

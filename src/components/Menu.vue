@@ -201,6 +201,26 @@ const getConversationTitle = (conversation: ConversationModel): string => {
   return `Conversation ${formatTimestamp(conversation.createdAt)}`; //
 };
 
+const resetCredentials = () => {
+  state.requestCredentialsReset();
+};
+
+const createNewConversation = async () => {
+  if (state.activePersonaId) {
+    console.log(
+      "Creating new conversation for persona:",
+      state.activePersonaId,
+    );
+    await state.createConversation(state.activePersonaId);
+    // Close history if open, as a new conversation is now active
+    if (isHistoryOpen.value) {
+      isHistoryOpen.value = false;
+    }
+  } else {
+    console.warn("Cannot create new conversation: No active persona.");
+  }
+};
+
 onMounted(() => {
   window.addEventListener("keydown", handleGlobalKeydown);
   document.addEventListener("click", closeDropdownOnClickOutside);
@@ -325,6 +345,17 @@ watch(filteredEntries, () => {
               </div>
               <div class="text-neutral-600"><b>Add new</b></div>
             </li>
+            <li
+              @click="resetCredentials"
+              class="flex items-center p-2 mx-1 rounded-lg cursor-pointer hover:bg-neutral-100 border-neutral-200 sticky bottom-0 bg-white"
+            >
+              <div
+                class="w-6 h-6 rounded-full mr-3 flex items-center justify-center bg-neutral-200 text-neutral-600"
+              >
+                <span class="pi pi-undo text-sm"></span>
+              </div>
+              <div class="text-neutral-600"><b>Reset Credentials</b></div>
+            </li>
           </ul>
         </div>
         <div
@@ -379,6 +410,18 @@ watch(filteredEntries, () => {
     </div>
 
     <div class="basis-1/10 relative flex justify-end pr-4">
+      <button
+        class="flex flex-row items-center space-x-2 p-2 rounded-full hover:bg-neutral-200"
+        id="new-convo-button"
+        @click="createNewConversation"
+        :disabled="!state.activePersonaId"
+        :class="{ 'opacity-50 cursor-not-allowed': !state.activePersonaId }"
+      >
+        <span
+          class="pi pi-plus text-neutral-500 cursor-pointer"
+          :class="{ 'hover:text-emerald-500': state.activePersona }"
+        ></span>
+      </button>
       <button
         class="flex flex-row items-center space-x-2 p-2 rounded-full hover:bg-neutral-200"
         id="history-button"

@@ -1,6 +1,6 @@
 // src/components/Home.vue
 <script setup lang="ts">
-import { onMounted, ref, onUnmounted } from "vue";
+import { onMounted, ref, onUnmounted, computed } from "vue";
 import ChatBox from "./ChatBox.vue";
 import Menu from "./Menu.vue";
 import Chat from "./Chat.vue";
@@ -12,6 +12,10 @@ defineProps<{ msg: string }>();
 const isUserloggedIn = ref<Boolean>(false);
 const isLoading = ref(true);
 let removeMessageChunkListener: (() => void) | null = null; // To store the cleanup function
+
+const showCredentialsSetup = computed(() => {
+  return !isUserloggedIn.value || state.showCredentialsSetup;
+});
 
 onMounted(async () => {
   isLoading.value = true; // Set loading true at the start
@@ -34,6 +38,7 @@ onMounted(async () => {
   } catch (error) {
     console.error("Error during login or listener setup:", error);
     isUserloggedIn.value = false; // Ensure logged out state on error
+    state.showCredentialsSetup = false;
   } finally {
     isLoading.value = false;
   }
@@ -53,8 +58,9 @@ onUnmounted(() => {
     <span class="pi pi-spin pi-spinner-dotted text-neutral-500 text-3xl"></span>
   </div>
   <template v-else>
+    <CredentialsSetup v-if="showCredentialsSetup" />
     <div
-      v-if="isUserloggedIn"
+      v-else
       class="flex flex-col items-center h-screen bg-neutral-100 overflow-hidden"
     >
       <Menu />
@@ -63,6 +69,5 @@ onUnmounted(() => {
         <ChatBox />
       </div>
     </div>
-    <CredentialsSetup v-else />
   </template>
 </template>

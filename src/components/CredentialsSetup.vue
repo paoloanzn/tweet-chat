@@ -1,6 +1,8 @@
 <script setup lang="ts">
 import { ref, onMounted, watch, onUpdated } from "vue";
 import { motion } from "motion-v";
+import type { RefSymbol } from "@vue/reactivity";
+import { state } from "../state";
 
 const electronAPI = window.electronAPI;
 
@@ -14,12 +16,13 @@ const currentStage = ref(1);
 const username = ref("");
 const email = ref("");
 const password = ref("");
+const apiKey = ref("");
 const loading = ref(false); // New reactive variable for loading state
 
 // Function to handle input and update stage
 const handleInput = async (stage: number, event: KeyboardEvent) => {
   if (event.key === "Enter" && stage === currentStage.value) {
-    if (stage < 3) {
+    if (stage < 4) {
       currentStage.value++;
     } else {
       await submitForm();
@@ -50,12 +53,15 @@ const submitForm = async () => {
     await electronAPI.secrets.set("twitter-username", username.value);
     await electronAPI.secrets.set("twitter-email", email.value);
     await electronAPI.secrets.set("twitter-password", password.value);
+    await electronAPI.secrets.set("OPENAI_API_KEY", apiKey.value);
     console.log("Attempting login...");
 
     const result = await electronAPI.core.attemptLogin();
     if (!result) {
       throw Error("Unable to login.");
     }
+
+    state.showCredentialsSetup = false;
     location.reload(); // Reload the page after successful submission
   } catch (error) {
     console.error("Error during form submission:", error);
@@ -146,6 +152,26 @@ onUpdated(focusInput);
               placeholder="password"
               v-model="password"
               @keydown="handleInput(3, $event)"
+            />
+          </motion.div>
+          <motion.div
+            :initial="{ opacity: 0 }"
+            :animate="{ opacity: currentStage === 4 ? 1 : 0 }"
+            :exit="{ opacity: 0 }"
+            :transition="transition"
+            v-if="currentStage === 4"
+            @animationend="focusInput"
+          >
+            <label for="apiKey" class="block text-xl font-medium"
+              >OpenAI API Key</label
+            >
+            <input
+              id="stage-4"
+              type="password"
+              class="mt-6 block w-full rounded-lg p-2 px-4 bg-neutral-100 focus:outline-none placeholder:italic"
+              placeholder=""
+              v-model="apiKey"
+              @keydown="handleInput(4, $event)"
             />
           </motion.div>
         </form>

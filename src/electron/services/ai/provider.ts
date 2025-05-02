@@ -1,5 +1,6 @@
 import { createOpenAI } from "@ai-sdk/openai";
 import { generateObject, streamText } from "ai";
+import { getSecretStore } from "../store/secret.js";
 
 export enum ModelProvider {
   OPENAI = "openai",
@@ -104,7 +105,9 @@ export const createModel = ({
       try {
         switch (provider) {
           case ModelProvider.OPENAI:
-            if (!process.env.OPENAI_API_KEY) {
+            const secrets = getSecretStore();
+            const apiKey = await secrets.get("OPENAI_API_KEY");
+            if (!apiKey) {
               return {
                 success: false,
                 message: "OPENAI_API_KEY is not set",
@@ -112,7 +115,7 @@ export const createModel = ({
               };
             }
             const openai = createOpenAI({
-              apiKey: process.env.OPENAI_API_KEY,
+              apiKey: apiKey,
               compatibility: "strict",
             });
 

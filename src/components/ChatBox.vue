@@ -1,10 +1,8 @@
 <script setup lang="ts">
 import { ref, onMounted, onUnmounted, watch } from "vue";
-import { state } from "../state"; //
-import { v4 as uuidv4 } from "uuid"; //
-import type { MessageModel } from "../electron/services/store/models"; //
-
-const core = window.electronAPI.core; //
+import { state } from "../state";
+import { v4 as uuidv4 } from "uuid";
+import type { MessageModel } from "../electron/services/store/models";
 
 const inputValue = ref("");
 const textareaRef = ref<HTMLTextAreaElement | null>(null);
@@ -62,14 +60,14 @@ const sendMessage = async () => {
   inputValue.value = ""; // Clear input immediately
   adjustHeight(); // Reset height after clearing
 
-  let targetConversationId = state.activeConversationId; //
+  let targetConversationId = state.activeConversationId;
 
   // 1. Create a new conversation if none is active for the current persona
   if (!targetConversationId) {
     console.log("No active conversation, creating a new one...");
     const newConversation = await state.createConversation(
       state.activePersonaId,
-    ); //
+    );
     if (!newConversation) {
       console.error("Failed to create a new conversation.");
       inputValue.value = currentInputValue; // Restore input value on failure
@@ -93,12 +91,12 @@ const sendMessage = async () => {
 
   // 2. Add the user message to the state/UI
   const userMessage: MessageModel = {
-    id: uuidv4(), //
-    sender: "user", //
-    text: textToSend, //
-    timestamp: Date.now(), //
+    id: uuidv4(),
+    sender: "user",
+    text: textToSend,
+    timestamp: Date.now(),
   };
-  await state.addMessageToActiveConversation(userMessage); //
+  await state.addMessageToActiveConversation(userMessage);
 
   // 3. Prepare for assistant's response (add placeholder)
   const assistantMessagePlaceholder: MessageModel = {

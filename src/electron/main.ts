@@ -7,6 +7,7 @@ import { generateNextMessage } from "./core/messages.js";
 import { getSecretStore } from "./services/store/secret.js";
 import { attemptLogin } from "./core/utils.js";
 import { getPreloadPath } from "./pathResolver.js";
+import * as packageInfo from "../../package.json" with { type: "json" };
 
 let mainWindow: BrowserWindow | null = null;
 
@@ -14,6 +15,7 @@ app.on("ready", () => {
   mainWindow = new BrowserWindow({
     width: 800,
     height: 1000,
+    title: packageInfo.default.productName,
     titleBarStyle: "hidden",
     webPreferences: {
       preload: getPreloadPath(),
@@ -23,7 +25,7 @@ app.on("ready", () => {
   });
   // hide traffic lights
   mainWindow.setWindowButtonVisibility(false);
-  mainWindow.setOpacity(0.95);
+  mainWindow.setOpacity(0.97);
   if (isDev()) {
     mainWindow.loadURL("http://localhost:5123");
   } else {

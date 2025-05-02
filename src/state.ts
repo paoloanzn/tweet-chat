@@ -1,13 +1,12 @@
-import { reactive, watch, ref } from "vue";
+import { reactive, watch } from "vue";
 import { v4 as uuidv4 } from "uuid";
 import type {
   ConversationModel,
   MessageModel,
   PersonaModel,
-} from "./electron/services/store/models"; //
+} from "./electron/services/store/models";
 
-const store = window.electronAPI.store; //
-const core = window.electronAPI.core; //
+const store = window.electronAPI.store;
 
 export interface AppState {
   // --- Reactive State ---
@@ -50,7 +49,7 @@ export const state = reactive<AppState>({
   async fetchAllPersonas() {
     this.isLoadingPersonas = true;
     try {
-      const { success, result } = await store.getAllPersona(); //
+      const { success, result } = await store.getAllPersona();
       if (success && result) {
         this.personas = result;
         // If no active persona or the active one is no longer valid, select the first one
@@ -80,7 +79,7 @@ export const state = reactive<AppState>({
   async fetchAllConversations() {
     this.isLoadingConversations = true;
     try {
-      const { success, result } = await store.getAllConversations(); //
+      const { success, result } = await store.getAllConversations();
       if (success && result) {
         this.conversations = result;
         // If no active conversation or the active one is no longer valid for the current persona, select the most recent one for this persona
@@ -117,7 +116,7 @@ export const state = reactive<AppState>({
   async setActivePersona(personaId: string | null) {
     if (this.activePersonaId === personaId) return;
     this.activePersonaId = personaId;
-    this.activePersona = this.personas.find((p) => p.id === personaId) ?? null; //
+    this.activePersona = this.personas.find((p) => p.id === personaId) ?? null;
     // When persona changes, reset active conversation and fetch relevant conversations
     await this.setActiveConversation(null);
     await this.fetchAllConversations(); // Re-fetch or re-filter conversations for the new persona
@@ -127,20 +126,20 @@ export const state = reactive<AppState>({
     if (this.activeConversationId === conversationId) return;
     this.activeConversationId = conversationId;
     this.activeConversation =
-      this.conversations.find((c) => c.id === conversationId) ?? null; //
+      this.conversations.find((c) => c.id === conversationId) ?? null;
   },
 
   async createConversation(
     personaId: string,
   ): Promise<ConversationModel | null> {
     const newConversation: ConversationModel = {
-      id: uuidv4(), //
-      createdAt: Date.now(), //
-      updatedAt: Date.now(), //
-      messages: [], //
-      personaId: personaId, //
+      id: uuidv4(),
+      createdAt: Date.now(),
+      updatedAt: Date.now(),
+      messages: [],
+      personaId: personaId,
     };
-    const { success, message } = await store.addConversation(newConversation); //
+    const { success, message } = await store.addConversation(newConversation);
     if (!success) {
       console.error("Failed to create conversation:", message);
       return null;
@@ -165,11 +164,6 @@ export const state = reactive<AppState>({
 
     // Optimistically add message to local state
     const updatedMessages = [...this.conversations[conversationIndex].messages];
-
-    // --- Check if adding a placeholder that shouldn't be persisted yet ---
-    // A simple check: assistant message with empty text is likely the placeholder
-    // OR rely solely on the persist flag passed in. Let's use the flag for clarity.
-    const isPlaceholder = message.sender === "assistant" && !persistMessage;
 
     if (updatedMessages.length >= 30) {
       // MESSAGE_LIMIT
@@ -261,7 +255,7 @@ export const state = reactive<AppState>({
   getConversationsForPersona(personaId: string): ConversationModel[] {
     if (!personaId) return [];
     return this.conversations
-      .filter((c) => c.personaId === personaId) //
+      .filter((c) => c.personaId === personaId)
       .sort((a, b) => b.updatedAt - a.updatedAt); // Sort by most recent first
   },
 });
@@ -274,7 +268,7 @@ state.fetchAllPersonas();
 watch(
   () => state.activePersonaId,
   (newId) => {
-    state.activePersona = state.personas.find((p) => p.id === newId) ?? null; //
+    state.activePersona = state.personas.find((p) => p.id === newId) ?? null;
   },
 );
 
@@ -282,6 +276,6 @@ watch(
   () => state.activeConversationId,
   (newId) => {
     state.activeConversation =
-      state.conversations.find((c) => c.id === newId) ?? null; //
+      state.conversations.find((c) => c.id === newId) ?? null;
   },
 );

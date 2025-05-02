@@ -8,14 +8,14 @@ const messagesContainer = ref<HTMLElement | null>(null);
 
 // Computed property to get messages from the active conversation in the global state
 const messages = computed<MessageModel[]>(() => {
-  return state.activeConversation?.messages ?? []; //
+  return state.activeConversation?.messages ?? [];
 });
 
-const activePersona = computed(() => state.activePersona); //
+const activePersona = computed(() => state.activePersona);
 
 const formatTimestamp = (timestamp: number): string => {
   // Example format: 10:35 AM
-  return format(new Date(timestamp), "p"); //
+  return format(new Date(timestamp), "p");
 };
 
 // Scroll to the bottom when messages change or component updates
@@ -55,15 +55,15 @@ watch(() => state.activeConversationId, scrollToBottom);
         :key="message.id"
         class="flex mb-4"
         :class="{
-          'justify-end': message.sender === 'user', //
-          'justify-start': message.sender === 'assistant', //
+          'justify-end': message.sender === 'user',
+          'justify-start': message.sender === 'assistant',
         }"
       >
         <div
           class="flex max-w-[75%]"
           :class="{
-            'flex-row-reverse': message.sender === 'user', //
-            'flex-row': message.sender === 'assistant', //
+            'flex-row-reverse': message.sender === 'user',
+            'flex-row': message.sender === 'assistant',
           }"
         >
           <img
@@ -104,8 +104,8 @@ watch(() => state.activeConversationId, scrollToBottom);
             <div
               class="p-3 rounded-lg shadow-sm mt-1 break-words text-left"
               :class="{
-                'bg-sky-100 text-sky-900': message.sender === 'user', //
-                'bg-white text-neutral-700': message.sender === 'assistant', //
+                'bg-sky-100 text-sky-900': message.sender === 'user',
+                'bg-white text-neutral-700': message.sender === 'assistant',
               }"
             >
               <p class="text-base whitespace-pre-wrap">{{ message.text }}</p>

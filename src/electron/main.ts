@@ -8,6 +8,7 @@ import { getSecretStore } from "./services/store/secret.js";
 import { attemptLogin } from "./core/utils.js";
 import { getPreloadPath } from "./pathResolver.js";
 import * as packageInfo from "../../package.json" with { type: "json" };
+import { platform } from "os";
 
 let mainWindow: BrowserWindow | null = null;
 
@@ -24,8 +25,11 @@ app.on("ready", () => {
       contextIsolation: true,
     },
   });
-  // hide traffic lights
-  mainWindow.setWindowButtonVisibility(false);
+  // hide traffic lights (Macos ONLY)
+  if (platform() === "darwin"){
+    mainWindow.setWindowButtonVisibility(false);
+  }
+
   mainWindow.setOpacity(0.97);
   if (isDev()) {
     mainWindow.loadURL("http://localhost:5123");

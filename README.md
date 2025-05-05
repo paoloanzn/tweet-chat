@@ -28,6 +28,8 @@
 
 Download the latest release for your operating system (macOS, Linux, Windows) from the project's [GitHub Releases](https://github.com/paoloanzn/tweet-chat/releases) page (link to be updated once releases are available).
 
+**IMPORTANT:** macOS dmg file is NOT yet codesigned and notarized, for this reason you won't be able to execute it unless you disable Gatekeeper. If you are on macOS the viable solution is to clone the repo and follow the build instruction below. We are working to solve the issue.
+
 ### Manual Build
 
 1.  **Clone the repository:**

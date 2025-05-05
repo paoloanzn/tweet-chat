@@ -4,7 +4,7 @@
   "author": "Paolo Anzani",
   "description": "AI powered chat with your own favorites Twitter accounts.",
   "private": true,
-  "version": "2.0.2",
+  "version": "2.0.3",
   "type": "module",
   "main": "dist-electron/src/electron/main.js",
   "scripts": {
